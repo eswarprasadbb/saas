@@ -1,4 +1,13 @@
 import React from 'react';
+import {
+  Grid,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  SelectChangeEvent,
+} from '@mui/material';
 import { ProductFormData } from '../../../../types/productTypes';
 
 interface LlmTokenConfigProps {
@@ -7,198 +16,145 @@ interface LlmTokenConfigProps {
 }
 
 const LlmTokenConfig: React.FC<LlmTokenConfigProps> = ({ formData, setFormData }) => {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target as HTMLInputElement;
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
+      [name]: value,
+    });
+  };
+
+  const handleSelectChange = (e: SelectChangeEvent) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
     });
   };
 
   return (
-    <div className="tab-content p-4 border rounded">
-      <h4 className="mb-4">LLM Token Configuration</h4>
-      <div className="row g-3">
-        <div className="col-md-6">
-          <div className="mb-3">
-            <label htmlFor="tokenProvider" className="form-label">
-              Token Provider <span className="text-danger">*</span>
-            </label>
-            <select
-              id="tokenProvider"
-              name="tokenProvider"
-              className="form-select"
-              value={formData.tokenProvider || ''}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Select provider</option>
-              <option value="OPENAI">OpenAI</option>
-              <option value="ANTHROPIC">Anthropic</option>
-              <option value="GOOGLE">Google</option>
-              <option value="META">Meta</option>
-              <option value="COHERE">Cohere</option>
-              <option value="CUSTOM">Custom Model</option>
-            </select>
-          </div>
-        </div>
+    <Grid container spacing={2}>
+      <Grid item xs={12} sm={6}>
+        <FormControl fullWidth size="small">
+          <InputLabel>Token Provider</InputLabel>
+          <Select
+            name="tokenProvider"
+            value={formData.tokenProvider || ''}
+            onChange={handleSelectChange}
+            label="Token Provider"
+          >
+            <MenuItem value="">--Select--</MenuItem>
+            <MenuItem value="OPENAI">OpenAI</MenuItem>
+            <MenuItem value="ANTHROPIC">Anthropic</MenuItem>
+            <MenuItem value="MISTRAL">Mistral</MenuItem>
+            <MenuItem value="CUSTOM">Custom</MenuItem>
+          </Select>
+        </FormControl>
+      </Grid>
 
-        <div className="col-md-6">
-          <div className="mb-3">
-            <label htmlFor="modelName" className="form-label">
-              Model Name <span className="text-danger">*</span>
-            </label>
-            <input
-              id="modelName"
-              name="modelName"
-              type="text"
-              className="form-control"
-              value={formData.modelName || ''}
-              onChange={handleChange}
-              placeholder="e.g., gpt-4, claude-2"
-              required
-            />
-          </div>
-        </div>
+      <Grid item xs={12} sm={6}>
+        <TextField
+          fullWidth
+          size="small"
+          label="Model Name"
+          name="modelName"
+          value={formData.modelName || ''}
+          onChange={handleInputChange}
+          placeholder="Enter model name"
+        />
+      </Grid>
 
-        <div className="col-md-6">
-          <div className="mb-3">
-            <label htmlFor="tokenUnitCost" className="form-label">
-              Token Unit Cost (USD) <span className="text-danger">*</span>
-            </label>
-            <div className="input-group">
-              <span className="input-group-text">$</span>
-              <input
-                id="tokenUnitCost"
-                name="tokenUnitCost"
-                type="number"
-                step="0.0000001"
-                min="0"
-                className="form-control"
-                value={formData.tokenUnitCost || ''}
-                onChange={handleChange}
-                placeholder="e.g., 0.00002"
-                required
-              />
-              <span className="input-group-text">per 1K tokens</span>
-            </div>
-            <div className="form-text">
-              Cost for 1,000 tokens in USD
-            </div>
-          </div>
-        </div>
+      <Grid item xs={12} sm={6}>
+        <TextField
+          fullWidth
+          size="small"
+          label="Token Unit Cost"
+          name="tokenUnitCost"
+          type="number"
+          value={formData.tokenUnitCost || ''}
+          onChange={handleInputChange}
+          placeholder="Enter cost"
+        />
+      </Grid>
 
-        <div className="col-md-6">
-          <div className="mb-3">
-            <label htmlFor="calculationMethod" className="form-label">
-              Calculation Method <span className="text-danger">*</span>
-            </label>
-            <select
-              id="calculationMethod"
-              name="calculationMethod"
-              className="form-select"
-              value={formData.calculationMethod || ''}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Select method</option>
-              <option value="TOKEN_COUNT">Token Count</option>
-              <option value="CHARACTER_COUNT">Character Count</option>
-              <option value="REQUEST">Per Request</option>
-              <option value="TOKEN_PAIR">Token Pair (Input+Output)</option>
-            </select>
-            <div className="form-text">
-              How tokens are calculated for billing
-            </div>
-          </div>
-        </div>
+      <Grid item xs={12} sm={6}>
+        <FormControl fullWidth size="small">
+          <InputLabel>Calculation Method</InputLabel>
+          <Select
+            name="calculationMethod"
+            value={formData.calculationMethod || ''}
+            onChange={handleSelectChange}
+            label="Calculation Method"
+          >
+            <MenuItem value="">--Select--</MenuItem>
+            <MenuItem value="FIXED">Fixed</MenuItem>
+            <MenuItem value="DYNAMIC">Dynamic</MenuItem>
+            <MenuItem value="HYBRID">Hybrid</MenuItem>
+          </Select>
+        </FormControl>
+      </Grid>
 
-        <div className="col-md-6">
-          <div className="mb-3">
-            <label htmlFor="quota" className="form-label">
-              Default Quota (optional)
-            </label>
-            <div className="input-group">
-              <input
-                id="quota"
-                name="quota"
-                type="number"
-                min="0"
-                className="form-control"
-                value={formData.quota || ''}
-                onChange={handleChange}
-                placeholder="e.g., 1000000"
-              />
-              <span className="input-group-text">tokens</span>
-            </div>
-            <div className="form-text">
-              Monthly token limit per customer (leave empty for unlimited)
-            </div>
-          </div>
-        </div>
+      <Grid item xs={12} sm={6}>
+        <TextField
+          fullWidth
+          size="small"
+          label="Quota"
+          name="quota"
+          type="number"
+          value={formData.quota || ''}
+          onChange={handleInputChange}
+          placeholder="Enter quota"
+        />
+      </Grid>
 
-        <div className="col-md-6">
-          <div className="mb-3">
-            <label htmlFor="inferencePriority" className="form-label">
-              Default Inference Priority
-            </label>
-            <select
-              id="inferencePriority"
-              name="inferencePriority"
-              className="form-select"
-              value={formData.inferencePriority || 'STANDARD'}
-              onChange={handleChange}
-            >
-              <option value="LOW">Low (best effort)</option>
-              <option value="STANDARD">Standard</option>
-              <option value="HIGH">High priority</option>
-            </select>
-          </div>
-        </div>
+      <Grid item xs={12} sm={6}>
+        <TextField
+          fullWidth
+          size="small"
+          label="Prompt Template"
+          name="promptTemplate"
+          value={formData.promptTemplate || ''}
+          onChange={handleInputChange}
+          placeholder="Enter prompt"
+        />
+      </Grid>
 
-        <div className="col-12">
-          <div className="mb-3">
-            <label htmlFor="promptTemplate" className="form-label">
-              Prompt Template (optional)
-            </label>
-            <textarea
-              id="promptTemplate"
-              name="promptTemplate"
-              className="form-control font-monospace"
-              rows={6}
-              value={formData.promptTemplate || 'You are a helpful assistant.\n\nUser: {user_input}\nAssistant:'}
-              onChange={handleChange}
-              placeholder="Enter your prompt template with placeholders"
-            />
-            <div className="form-text">
-              Use {'{variable_name}'} for dynamic content. Common placeholders: {'{user_input}'}, {'{context}'}, {'{history}'}
-            </div>
-          </div>
-        </div>
+      <Grid item xs={12} sm={6}>
+        <FormControl fullWidth size="small">
+          <InputLabel>Inference Priority</InputLabel>
+          <Select
+            name="inferencePriority"
+            value={formData.inferencePriority || ''}
+            onChange={handleSelectChange}
+            label="Inference Priority"
+          >
+            <MenuItem value="">--Select--</MenuItem>
+            <MenuItem value="LOW">Low</MenuItem>
+            <MenuItem value="MEDIUM">Medium</MenuItem>
+            <MenuItem value="HIGH">High</MenuItem>
+          </Select>
+        </FormControl>
+      </Grid>
 
-        <div className="col-md-6">
-          <div className="mb-3">
-            <label htmlFor="computeTier" className="form-label">
-              Compute Tier
-            </label>
-            <select
-              id="computeTier"
-              name="computeTier"
-              className="form-select"
-              value={formData.computeTier || 'STANDARD'}
-              onChange={handleChange}
-            >
-              <option value="ECONOMY">Economy (slower, lower cost)</option>
-              <option value="STANDARD">Standard</option>
-              <option value="PREMIUM">Premium (faster, higher cost)</option>
-            </select>
-            <div className="form-text">
-              Affects response time and cost
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+      <Grid item xs={12} sm={6}>
+        <FormControl fullWidth size="small">
+          <InputLabel>Compute Tier</InputLabel>
+          <Select
+            name="computeTier"
+            value={formData.computeTier || ''}
+            onChange={handleSelectChange}
+            label="Compute Tier"
+          >
+            <MenuItem value="">--Select--</MenuItem>
+            <MenuItem value="STANDARD">Standard</MenuItem>
+            <MenuItem value="PREMIUM">Premium</MenuItem>
+            <MenuItem value="GPU_OPTIMIZED">GPU Optimized</MenuItem>
+          </Select>
+        </FormControl>
+      </Grid>
+    </Grid>
   );
 };
 

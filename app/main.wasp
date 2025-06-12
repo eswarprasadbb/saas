@@ -29,7 +29,7 @@ app OpenSaaS {
       email: {
         fromField: {
           name: "Open SaaS App",
-          email: "me@example.com"
+          email: "eswarprasad@aforo.ai"
         },
         emailVerification: {
           clientRoute: EmailVerificationRoute,
@@ -60,11 +60,16 @@ app OpenSaaS {
     rootComponent: import App from "@src/client/App",
   },
 
+    server: {
+    setupFn: import { serverSetup } from "@src/server/middleware"
+  },
+
   emailSender: {
-    provider: Dummy,
+    provider: SMTP,
+
     defaultFrom: {
-      name: "Open SaaS App",
-      email: "me@example.com"
+      name: "Aforo.ai",
+      email: "eswarprasad@aforo.ai"
     },
   },
 }
@@ -76,8 +81,7 @@ page LandingPage {
 
 route ProductsRoute { path: "/products", to: ProductsPage }
 page ProductsPage {
-  component: import ProductsPage from "@src/client/pages/ProductsPage",
-  authRequired: true
+  component: import ProductsPage from "@src/client/pages/ProductsPage"
 }
 
 //#region Auth Pages
@@ -111,20 +115,22 @@ page EmailVerificationPage {
 route GetStartedRoute { path: "/get-started", to: GetStartedPage }
 
 page GetStartedPage {
-  authRequired: true,
   component: import GetStarted from "@src/client/components/GetStarted/GetStarted"
 }
 
 route AccountRoute { path: "/account", to: AccountPage }
 page AccountPage {
-  authRequired: true,
   component: import Account from "@src/user/AccountPage"
 }
 
 route NewProductRoute { path: "/new-product", to: NewProductPage }
 page NewProductPage {
-  authRequired: true,
   component: import NewProductForm from "@src/client/components/NewProductForm/NewProductForm.fixed"
+}
+
+route SideNavbarRoute { path: "/side", to: SideNavbarPage }
+page SideNavbarPage {
+  component: import SideNavbar from "@src/client/components/SideNavbar/SideNavbar"
 }
 
 query getPaginatedUsers {
@@ -151,7 +157,6 @@ page PricingPage {
 
 route CheckoutRoute { path: "/checkout", to: CheckoutPage }
 page CheckoutPage {
-  authRequired: true,
   component: import Checkout from "@src/payment/CheckoutPage"
 }
 
@@ -176,7 +181,6 @@ api paymentsWebhook {
 //#region File Upload
 route FileUploadRoute { path: "/file-upload", to: FileUploadPage }
 page FileUploadPage {
-  authRequired: true,
   component: import FileUpload from "@src/file-upload/FileUploadPage"
 }
 
@@ -199,7 +203,6 @@ query getDownloadFileSignedURL {
 //#region Admin Dashboard
 route AdminRoute { path: "/admin", to: AdminDashboardPage }
 page AdminDashboardPage {
-  authRequired: true,
    component: import AdminUsers from "@src/admin/dashboards/users/UsersDashboardPage"
 }
 
