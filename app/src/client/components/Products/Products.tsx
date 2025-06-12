@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import './Products.css';
 
 interface Product {
@@ -43,7 +44,15 @@ export default function Products() {
 
   return (
     <div className="products-container">
-      <h2>Products</h2>
+      <div className="products-header">
+        <h2>Products</h2>
+        <div className="products-actions">
+          <input type="search" placeholder="Search among your products..." className="products-search" />
+          <Link to="/new-product" className="new-product-button">
+            + New Product
+          </Link>
+        </div>
+      </div>
       
       {products.length === 0 ? (
         <p>No products found.</p>
