@@ -10,6 +10,7 @@ import {
   IconButton,
   Box,
   MenuItem,
+  Grid,
 } from '@mui/material';
 
 interface FormLabel {
@@ -111,26 +112,9 @@ const GeneralDetails: React.FC<GeneralDetailsProps> = ({
     onChange({ productName: e.target.value });
     setError(null);
   };
-  const [tagKeyState, setTagKeyState] = useState('');
-  const [tagValueState, setTagValueState] = useState('');
-
-  const handleAddTag = () => {
-    if (tagKeyState && tagValueState) {
-      addTag(tagKeyState, tagValueState);
-      setTagKeyState('');
-      setTagValueState('');
-    }
-  };
-
-  const handleTagKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTagKeyState(e.target.value);
-  };
-
-  const handleTagValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTagValueState(e.target.value);
-  };
 
   return (
+    <form onSubmit={handleSubmit}>
       <Box p={3} borderRadius={2} bgcolor="#fff" className={styles.formContainer}>
         <Grid container spacing={2} className={styles.formGrid}>
           <Grid item xs={12}>
@@ -186,7 +170,7 @@ const GeneralDetails: React.FC<GeneralDetailsProps> = ({
           </Grid>
 
           <Grid item xs={12}>
-              <label className={styles.label}>{formLabels.description}</label>
+            <label className={styles.label}>{formLabels.description}</label>
             <TextField
               fullWidth
               multiline
@@ -247,7 +231,7 @@ const GeneralDetails: React.FC<GeneralDetailsProps> = ({
           </Grid>
 
           <Grid item xs={12} sm={5}>
-              <label className={styles.label}>{formLabels.tags}</label>
+            <label className={styles.label}>{formLabels.tags}</label>
             <div className={styles.tagInputContainer}>
               <TextField
                 fullWidth
@@ -302,11 +286,12 @@ const GeneralDetails: React.FC<GeneralDetailsProps> = ({
           <Grid item xs={12}>
             <Box className={styles.buttonGroup}>
               <Button variant="outlined" color="secondary" onClick={onBack} className={styles.buttonSecondary}>Cancel</Button>
-              <Button variant="contained" color="success" type="submit" className={styles.buttonPrimary}>Next</Button>
+              <Button variant="contained" color="success" type="submit" onClick={handleSubmit} className={styles.buttonPrimary}>Next</Button>
             </Box>
           </Grid>
         </Grid>
       </Box>
+    </form>
   );
 };
 

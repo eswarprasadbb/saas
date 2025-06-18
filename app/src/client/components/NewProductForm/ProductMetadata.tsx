@@ -33,13 +33,13 @@ const ProductMetadata: React.FC<ProductMetadataProps> = ({
     const { name, value, type } = target;
     
     // Validate enums
-    if (name === 'format' && !validateEnum('format', value, enums.formats)) return;
-    if (name === 'accessMethod' && !validateEnum('accessMethod', value, enums.accessMethods)) return;
-    if (name === 'compression' && !validateEnum('compression', value, enums.compressionFormats)) return;
-    if (name === 'deliveryFrequency' && !validateEnum('deliveryFrequency', value, enums.deliveryFrequencies)) return;
+    if (name === 'format' && !validateEnum('format', value.toUpperCase(), enums.formats)) return;
+    if (name === 'accessMethod' && !validateEnum('accessMethod', value.toUpperCase(), enums.accessMethods)) return;
+    if (name === 'compression' && !validateEnum('compression', value.toUpperCase(), enums.compressionFormats)) return;
+    if (name === 'deliveryFrequency' && !validateEnum('deliveryFrequency', value.toUpperCase(), enums.deliveryFrequencies)) return;
 
     const data: Partial<ProductFormData> = {
-      [name]: type === 'checkbox' ? target.checked : value,
+      [name]: type === 'checkbox' ? target.checked : value.toUpperCase(),
     };
 
     onChange(data);
