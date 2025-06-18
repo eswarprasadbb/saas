@@ -1,11 +1,15 @@
 import React from 'react';
 import NewProductForm from './NewProductForm.fixed';
 
-const NewProductFormWrapper: React.FC = () => {
+interface NewProductFormWrapperProps {
+  onSubmit: (formData: any) => Promise<void>;
+  onClose: () => void;
+}
+
+const NewProductFormWrapper: React.FC<NewProductFormWrapperProps> = ({ onSubmit, onClose }) => {
   return (
     <div>
-      <h2>Create New Product</h2>
-      <NewProductForm />
+      <NewProductForm onSubmit={onSubmit} onClose={onClose} />
     </div>
   );
 };

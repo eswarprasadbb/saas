@@ -1,30 +1,49 @@
+@import "../Variables/Variables.css";
+
+.stepIndicatorContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 1rem 0;
+  width: 1020px;
+}
+
+.formContainer {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  width: 970px;
+  margin-left: 20px;
+}
+
 .step {
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
-  padding-bottom: 8px;
+  padding: 0.5rem 1rem;
   flex: 1;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.step:not(:last-child)::after {
-  content: '';
-  position: absolute;
-  top: 15px;
-  left: 60%;
-  right: -40%;
-  height: 2px;
-  background-color: #e0e0e0;
-  z-index: 1;
+
+
+.stepTitle {
+  
+  margin: 0.5rem 0;
+  color: var(--color-neutral-1700);
+
+font-family: var(--font-family-primary);
+font-size: var(--font-size-lg);
+font-style: normal;
+font-weight: 600;
+line-height: var(--line-height-body-lg);
 }
 
-.step.completed:not(:last-child)::after,
-.step.active:not(:last-child)::after {
-  background-color: #4f46e5;
-}
-
-.stepCircle {
-  display: none;
+.step.completed .stepTitle,
+.step.active .stepTitle {
+  color: var(--color-primary-1700);
 }
 
 .stepLabel {
@@ -36,11 +55,11 @@
 }
 
 .active .stepLabel {
-  color: #4f772d;
+  color: var(--color-neutral-1700);
 }
 
 .completed .stepLabel {
-  color: #4f772d;
+  color: var(--color-neutral-1700);
 }
 
 .active::after {
@@ -50,7 +69,7 @@
   left: 0;
   width: 100%;
   height: 3px;
-  background-color: #4f772d;
+  background-color: var(--color-primary-800);
   border-radius: 2px;
 }
 
@@ -71,4 +90,15 @@
 .disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+
+.new-product-form .title {
+  color: var(--color-neutral-1700);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-lg);
+  font-style: normal;
+  font-weight: 600;
+  line-height: var(--line-height-heading-h4);
+  margin-left: 270px;
 }

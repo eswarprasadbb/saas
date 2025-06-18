@@ -1,0 +1,178 @@
+@import "../Variables/Variables.css";
+
+/* Button styles */
+.buttonPrimary {
+  background-color: var(--color-primary-800);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.5rem;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  line-height: var(--line-height-body-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.buttonPrimary:hover {
+  background-color: var(--color-primary-900);
+  transform: translateY(-1px);
+}
+
+.buttonSecondary {
+  background-color: var(--color-neutral-100);
+  color: var(--color-neutral-900);
+  border: 1px solid var(--color-neutral-300);
+  border-radius: 6px;
+  padding: 0.5rem 1.5rem;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  line-height: var(--line-height-body-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.buttonSecondary:hover {
+  background-color: var(--color-neutral-200);
+  border-color: var(--color-neutral-400);
+}
+
+.buttonTertiary {
+  background: none;
+  color: var(--color-primary-800);
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.5rem;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  line-height: var(--line-height-body-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.buttonTertiary:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+  color: var(--color-primary-900);
+}
+
+/* Form header styles */
+.buttonGroup {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.formHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.formTitle {
+  color: var(--color-neutral-1700);
+
+  /* body/semibold/lg */
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-lg);
+  font-style: normal;
+  font-weight: 600;
+  line-height: var(--line-height-body-lg);
+}
+
+.label {
+  color: var(--color-neutral-1400);
+
+  /* body/semibold/md */
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-md);
+  font-style: normal;
+  font-weight: 600;
+  line-height: var(--line-height-body-md);
+}
+
+/* Form section styles */
+.formSection {
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  width: 1020px;
+  margin-left: 200px;
+  position: relative;
+}
+
+
+
+.formGrid {
+  gap: 1.5rem;
+}
+
+.formField {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.tagInputContainer {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.tagButton {
+  background: none;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--color-primary-800);
+  transition: all 0.3s ease;
+}
+
+.tagButton:hover {
+  background-color: #f0f8ff;
+}
+
+.tagButton.active {
+  background-color: var(--color-primary-800);
+  color: white;
+}
+
+.tagList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.tagItem {
+  display: flex;
+  align-items: center;
+  background: #f0f8ff;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  gap: 0.5rem;
+}
+
+.removeTagButton {
+  background: none;
+  border: none;
+  color: var(--color-primary-800);
+  cursor: pointer;
+  padding: 0;
+}
+
+.removeTagButton:hover {
+  color: #4A5568;
+}
+
+.formButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+

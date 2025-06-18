@@ -1,16 +1,7 @@
 import React, { useState } from 'react';
-import {
-  Grid,
-  TextField,
-  Button,
-  Typography,
-  FormControlLabel,
-  Switch,
-  IconButton,
-  Box,
-} from '@mui/material';
-import { Add } from '@mui/icons-material';
-import { ProductFormData } from '../../../types/productTypes';
+import { Box, Grid, TextField, Button, FormControlLabel, Switch, IconButton } from '@mui/material';
+import Add from '@mui/icons-material/Add';
+import { ProductFormData, enums } from '../../../types/productTypes';
 
 interface ProductMetadataProps {
   formData: ProductFormData;
@@ -27,10 +18,32 @@ const ProductMetadata: React.FC<ProductMetadataProps> = ({
 }) => {
   const [labelKey, setLabelKey] = useState('');
   const [labelValue, setLabelValue] = useState('');
+  const [error, setError] = React.useState<string | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    onChange({ [name]: type === 'checkbox' ? checked : value });
+  const validateEnum = (fieldName: string, value: string, enumValues: string[]) => {
+    if (!enumValues.includes(value)) {
+      setError(`Invalid value for ${fieldName}. Valid values are: ${enumValues.join(', ')}`);
+      return false;
+    }
+    return true;
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const target = e.target as HTMLInputElement;
+    const { name, value, type } = target;
+    
+    // Validate enums
+    if (name === 'format' && !validateEnum('format', value, enums.formats)) return;
+    if (name === 'accessMethod' && !validateEnum('accessMethod', value, enums.accessMethods)) return;
+    if (name === 'compression' && !validateEnum('compression', value, enums.compressionFormats)) return;
+    if (name === 'deliveryFrequency' && !validateEnum('deliveryFrequency', value, enums.deliveryFrequencies)) return;
+
+    const data: Partial<ProductFormData> = {
+      [name]: type === 'checkbox' ? target.checked : value,
+    };
+
+    onChange(data);
+    setError(null);
   };
 
   const handleLabelAdd = () => {
@@ -43,13 +56,19 @@ const ProductMetadata: React.FC<ProductMetadataProps> = ({
   };
 
   return (
-    <form onSubmit={(e) => { e.preventDefault(); onNext(); }}>
-      <Typography variant="h6" gutterBottom>
-        Product Metadata
-      </Typography>
-
-      <Box p={3} borderRadius={2} bgcolor="#f9f9f9">
+    <form onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      onNext();
+    }}>
+      <Box p={3} borderRadius={2} bgcolor="#fff">
         <Grid container spacing={2}>
+          <Grid item xs={12}>
+            {error && (
+              <div style={{ color: 'red', marginBottom: '1rem' }}>
+                {error}
+              </div>
+            )}
+          </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
               label="Internal SKU Code"
@@ -99,7 +118,9 @@ const ProductMetadata: React.FC<ProductMetadataProps> = ({
               control={
                 <Switch
                   checked={formData.billable}
-                  onChange={handleChange}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    onChange({ billable: e.target.checked });
+                  }}
                   name="billable"
                 />
               }
@@ -112,7 +133,7 @@ const ProductMetadata: React.FC<ProductMetadataProps> = ({
               fullWidth
               label="Key"
               value={labelKey}
-              onChange={(e) => setLabelKey(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLabelKey(e.target.value)}
             />
           </Grid>
           <Grid item xs={12} sm={5}>
@@ -120,7 +141,7 @@ const ProductMetadata: React.FC<ProductMetadataProps> = ({
               fullWidth
               label="Value"
               value={labelValue}
-              onChange={(e) => setLabelValue(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLabelValue(e.target.value)}
             />
           </Grid>
           <Grid item xs={12} sm={2}>
@@ -165,3 +186,4 @@ const ProductMetadata: React.FC<ProductMetadataProps> = ({
 };
 
 export default ProductMetadata;
+ 

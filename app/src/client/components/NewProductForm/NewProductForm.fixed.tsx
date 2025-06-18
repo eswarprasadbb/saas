@@ -12,16 +12,38 @@ type Step = 0 | 1 | 2 | 3 | 4;
 
 const steps = ['General Details', 'Product Metadata', 'Configuration', 'Review'];
 
-const NewProductForm: React.FC = () => {
+interface NewProductFormProps {
+  onSubmit: (formData: ProductFormData) => Promise<void>;
+  onClose: () => void;
+}
+
+const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmit, onClose }) => {
   const [step, setStep] = useState<Step>(0);
   const [productId, setProductId] = useState<string | null>(null);
+
+  const [tagKey, setTagKey] = useState('');
+  const [tagValue, setTagValue] = useState('');
+
+  const categoryOptions = ['INTERNAL', 'EXTERNAL', 'PARTNER'];
+
+  const handleAddTag = () => {
+    if (tagKey && tagValue) {
+      updateFormData({ tags: [...(formData.tags || []), { key: tagKey, value: tagValue }] });
+      setTagKey('');
+      setTagValue('');
+    }
+  };
+
+  const handleRemoveTag = (key: string) => {
+    updateFormData({ tags: formData.tags.filter(tag => tag.key !== key) });
+  };
 
   const [formData, setFormData] = useState<ProductFormData>({
     productName: '',
     productType: '',
     version: '',
     description: '',
-    category: '',
+    category: 'INTERNAL', // Set a default value from categoryOptions
     visibility: false,
     status: '',
     internalSkuCode: '',
@@ -31,7 +53,10 @@ const NewProductForm: React.FC = () => {
     billable: false,
     auditLogId: '',
     linkedRatePlans: [],
-    tags: { key1: 'value1', key2: 'value2' },
+    tags: [
+      { key: 'key1', value: 'value1' },
+      { key: 'key2', value: 'value2' }
+    ],
     labels: { label1: 'A', label2: 'B' },
 
     endpointUrl: '',
@@ -219,23 +244,14 @@ const NewProductForm: React.FC = () => {
   };
 
   const renderStepTabs = () => (
-    <div style={{ display: 'flex', gap: '32px', marginBottom: '24px', borderBottom: '1px solid #E0E0E0' }}>
+    <div className={styles.stepIndicatorContainer}>
       {steps.map((label, index) => (
         <div
           key={index}
+          className={`${styles.step} ${step >= index ? styles.completed : ''} ${step === index ? styles.active : ''}`}
           onClick={() => setStep(index as Step)}
-          style={{
-            fontFamily: 'Inter, sans-serif',
-            fontSize: '14px',
-            fontWeight: 600,
-            paddingBottom: '8px',
-            borderBottom: step === index ? '2px solid #6D8835' : '2px solid transparent',
-            color: step === index ? '#6D8835' : '#25211F',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease'
-          }}
         >
-          {label}
+          <div className={styles.stepTitle}>{label}</div>
         </div>
       ))}
     </div>
@@ -243,11 +259,23 @@ const NewProductForm: React.FC = () => {
 
   return (
     <div className="new-product-form">
-      <h2>Create New Pricing Product</h2>
-      {renderStepTabs()}
+      <h2 className={styles.title}>Create New Pricing Product</h2>
       <div className={styles.formContainer}>
+        {renderStepTabs()}
         {step === 0 && (
-          <GeneralDetails formData={formData} onChange={updateFormData} onNext={nextStep} />
+          <GeneralDetails
+            formData={formData}
+            onChange={updateFormData}
+            onNext={nextStep}
+            onBack={prevStep}
+            categoryOptions={categoryOptions}
+            addTag={handleAddTag}
+            removeTag={handleRemoveTag}
+            tagKey={tagKey}
+            tagValue={tagValue}
+            setTagKey={setTagKey}
+            setTagValue={setTagValue}
+          />
         )}
         {step === 1 && (
           <ProductMetadata
