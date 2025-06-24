@@ -12,8 +12,8 @@
   background: white;
   border-radius: 8px;
   padding: 1.5rem;
-  width: 970px;
-  margin-left: 20px;
+  width: 990px;
+  margin-left: 40px;
 }
 
 .step {
@@ -62,21 +62,20 @@ line-height: var(--line-height-body-lg);
   color: var(--color-neutral-1700);
 }
 
-.active::after {
+/* .active::after {
   content: '';
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 100%;
+  width: 50%;
   height: 3px;
   background-color: var(--color-primary-800);
   border-radius: 2px;
-}
+} */
 
 .stepIndicatorBar {
   width: 100%;
   height: 3px;
-  background-color: #4f46e5;
   position: absolute;
   bottom: -10px;
   left: 0;
@@ -93,12 +92,20 @@ line-height: var(--line-height-body-lg);
 }
 
 
-.new-product-form .title {
+.title {
   color: var(--color-neutral-1700);
-  font-family: var(--font-family-primary);
-  font-size: var(--font-size-lg);
-  font-style: normal;
-  font-weight: 600;
-  line-height: var(--line-height-heading-h4);
-  margin-left: 270px;
+
+font-family: var(--font-family-primary);
+font-size: var(--font-size-h4);
+font-style: normal;
+font-weight: 600;
+line-height: var(--line-height-heading-h4); 
+margin-left: 40px;
+margin-bottom: 0;
+
+font-size: var(--fontsize-heading-h4);
+font-style: normal;
+font-weight: 600;
+line-height: var(--line-height-heading-h4); 
+  margin-top: -20px;
 }

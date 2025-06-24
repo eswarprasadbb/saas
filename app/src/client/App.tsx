@@ -11,6 +11,7 @@ import NavBar from './components/NavBar/NavBar';
 import SideNavbar from './components/SideNavbar/SideNavbar';
 import Customers from './components/Customers/Customers';
 import Products from './components/Products/Products';
+import RatePlans from './components/RatePlans/RatePlans'; // Ensure this path is correct relative to App.tsx
 
 /**
  * use this component to wrap all child components
@@ -38,14 +39,18 @@ export default function App() {
     {
       name: 'Get Started',
       to: '/get-started',
+    },
+    {
+      name: 'Rate Plans',
+      to: '/get-started/rate-plans',
     }
   ];
 
-  const location = useLocation();
   const currentTab = (() => {
     if (location.pathname === '/get-started') return 'Get Started';
     if (location.pathname === '/get-started/customers') return 'Customers';
     if (location.pathname === '/get-started/products') return 'Products';
+    if (location.pathname === '/get-started/rate-plans') return 'Rate Plans';
     return 'Get Started';
   })();
 
@@ -68,6 +73,7 @@ export default function App() {
                      <Route index element={<div className="flex-1 h-full">Empty Content</div>} />
                      <Route path="customers" element={<Customers />} />
                      <Route path="products" element={<Products />} />
+                     <Route path="rate-plans" element={<RatePlans />} />
                    </Routes>
                  </div>
                </div>

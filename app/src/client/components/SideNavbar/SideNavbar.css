@@ -77,12 +77,12 @@
 .nav-item.active::before {
   content: '';
   position: absolute;
-  top: 4px;
-  bottom: 4px;
-  left: 4px;
-  right: 4px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 8px;
   background-color: var(--color-neutral-100);
-  border-radius: 10px;
   z-index: -1;
 }
 

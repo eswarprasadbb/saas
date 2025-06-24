@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import GeneralDetails from './GeneralDetails';
 import ProductMetadata from './ProductMetadata';
 import ConfigurationStep from './ConfigurationStep';
@@ -20,22 +20,30 @@ interface NewProductFormProps {
 const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmit, onClose }) => {
   const [step, setStep] = useState<Step>(0);
   const [productId, setProductId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const [tagKey, setTagKey] = useState('');
   const [tagValue, setTagValue] = useState('');
 
   const categoryOptions = ['INTERNAL', 'EXTERNAL', 'PARTNER'];
 
-  const handleAddTag = () => {
-    if (tagKey && tagValue) {
-      updateFormData({ tags: [...(formData.tags || []), { key: tagKey, value: tagValue }] });
-      setTagKey('');
-      setTagValue('');
-    }
+  const handleAddTag = (key: string, value: string) => {
+    updateFormData({ tags: [...(formData.tags || []), { key, value }] });
   };
 
   const handleRemoveTag = (key: string) => {
     updateFormData({ tags: formData.tags.filter(tag => tag.key !== key) });
+  };
+
+  const handleAddLabel = (key: string, value: string) => {
+    const newLabels = { ...formData.labels, [key]: value };
+    updateFormData({ labels: newLabels });
+  };
+
+  const handleRemoveLabel = (key: string) => {
+    const newLabels = { ...formData.labels };
+    delete newLabels[key];
+    updateFormData({ labels: newLabels });
   };
 
   const [formData, setFormData] = useState<ProductFormData>({
@@ -43,7 +51,7 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmit, onClose }) =>
     productType: '',
     version: '',
     description: '',
-    category: 'INTERNAL', // Set a default value from categoryOptions
+    category: '',
     visibility: false,
     status: '',
     internalSkuCode: '',
@@ -53,24 +61,21 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmit, onClose }) =>
     billable: false,
     auditLogId: '',
     linkedRatePlans: [],
-    tags: [
-      { key: 'key1', value: 'value1' },
-      { key: 'key2', value: 'value2' }
-    ],
-    labels: { label1: 'A', label2: 'B' },
+    tags: [],
+    labels: {},
 
     endpointUrl: '',
-    authType: 'NONE',
+    authType: '',
     payloadMetric: '',
     rateLimitPolicy: '',
     granularity: '',
     grouping: '',
     caching: false,
-    latencyClass: 'LOW',
+    latencyClass: '',
 
     size: '',
     format: '',
-    compression: 'NONE',
+    compression: '',
     encoding: '',
     schema: '',
     deliveryFrequency: '',
@@ -80,10 +85,10 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmit, onClose }) =>
 
     queryTemplate: '',
     dbType: '',
-    freshness: 'REALTIME',
-    executionFrequency: 'ON_DEMAND',
+    freshness: '',
+    executionFrequency: '',
     expectedRowRange: '',
-    joinComplexity: 'LOW',
+    joinComplexity: '',
     resultSize: '',
     cached: false,
 
@@ -122,9 +127,11 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmit, onClose }) =>
           billable: formData.billable,
           auditLogId: formData.auditLogId,
           linkedRatePlans: formData.linkedRatePlans,
-          tags: formData.tags,
+          tags: formData.tags.reduce((acc, tag) => ({ ...acc, [tag.key]: tag.value }), {}),
           labels: formData.labels,
         };
+
+        console.log('Sending base payload:', basePayload);
 
         const res = await fetch('http://13.230.194.245:8080/api/products', {
           method: 'POST',
@@ -133,15 +140,22 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmit, onClose }) =>
         });
 
         const responseText = await res.text();
+        console.log('Response:', responseText);
 
         if (!res.ok) {
           throw new Error(`Product creation failed: ${responseText}`);
         }
 
-        const { productId } = JSON.parse(responseText);
-        setProductId(productId);
+        const responseJson = JSON.parse(responseText);
+        if (!responseJson.productId) {
+          throw new Error('Invalid response: productId missing');
+        }
+
+        setProductId(responseJson.productId);
         Swal.fire('Success', 'Base Product Created', 'success');
       } catch (err: any) {
+        console.error('Error details:', err);
+        setError(err.message);
         Swal.fire('Error', err.message, 'error');
         return;
       }
@@ -154,7 +168,7 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmit, onClose }) =>
 
   const handleSubmit = async () => {
     if (!productId) {
-      Swal.fire('Error', 'Product ID missing. Please complete earlier steps.', 'error');
+      setError('Product ID missing. Please complete earlier steps.');
       return;
     }
 
@@ -226,7 +240,14 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmit, onClose }) =>
           throw new Error('Unknown product type');
       }
 
-      const configRes = await fetch(`http://13.230.194.245:8080${configEndpoint}`, {
+      const endpointMap = {
+        'API': 'api',
+        'FlatFile': 'flatfile',
+        'SQLResult': 'sql-result',
+        'LLMToken': 'llm-token'
+      };
+
+      const configRes = await fetch(`http://13.230.194.245:8080/api/products/${productId}/${endpointMap[formData.productType]}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(configBody),
@@ -258,8 +279,8 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmit, onClose }) =>
   );
 
   return (
-    <div className="new-product-form">
-      <h2 className={styles.title}>Create New Pricing Product</h2>
+    <div className={styles.newProductForm}>
+      <h4 className={styles.title}>Create New Pricing Product</h4>
       <div className={styles.formContainer}>
         {renderStepTabs()}
         {step === 0 && (
@@ -283,6 +304,17 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmit, onClose }) =>
             onChange={updateFormData}
             onNext={nextStep}
             onBack={prevStep}
+            categoryOptions={[]}
+            subCategoryOptions={[]}
+            unitOptions={[]}
+            taxOptions={[]}
+            unitTypeOptions={[]}
+            labelKey={tagKey}
+            labelValue={tagValue}
+            setLabelKey={setTagKey}
+            setLabelValue={setTagValue}
+            addLabel={handleAddLabel}
+            removeLabel={handleRemoveLabel}
           />
         )}
         {step === 2 && (

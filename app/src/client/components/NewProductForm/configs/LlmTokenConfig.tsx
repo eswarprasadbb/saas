@@ -1,23 +1,15 @@
 import React from 'react';
-import {
-  Grid,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  SelectChangeEvent,
-} from '@mui/material';
 import { ProductFormData } from '../../../../types/productTypes';
+import styles from './LlmTokenConfig.module.css';
 
-interface LlmTokenConfigProps {
+interface Props {
   formData: ProductFormData;
-  setFormData: (data: ProductFormData) => void;
+  setFormData: (data: Partial<ProductFormData>) => void;
 }
 
-const LlmTokenConfig: React.FC<LlmTokenConfigProps> = ({ formData, setFormData }) => {
+const LlmTokenConfig: React.FC<Props> = ({ formData, setFormData }) => {
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const { name, value } = e.target;
     setFormData({
@@ -26,7 +18,9 @@ const LlmTokenConfig: React.FC<LlmTokenConfigProps> = ({ formData, setFormData }
     });
   };
 
-  const handleSelectChange = (e: SelectChangeEvent) => {
+  const handleSelectChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -35,126 +29,124 @@ const LlmTokenConfig: React.FC<LlmTokenConfigProps> = ({ formData, setFormData }
   };
 
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={12} sm={6}>
-        <FormControl fullWidth size="small">
-          <InputLabel>Token Provider</InputLabel>
-          <Select
-            name="tokenProvider"
-            value={formData.tokenProvider || ''}
-            onChange={handleSelectChange}
-            label="Token Provider"
-          >
-            <MenuItem value="">--Select--</MenuItem>
-            <MenuItem value="OPENAI">OpenAI</MenuItem>
-            <MenuItem value="ANTHROPIC">Anthropic</MenuItem>
-            <MenuItem value="MISTRAL">Mistral</MenuItem>
-            <MenuItem value="CUSTOM">Custom</MenuItem>
-          </Select>
-        </FormControl>
-      </Grid>
+    <div className={styles.formGrid}>
+      <div className={styles.formGroup}>
+        <label className={styles.formGroupLabel} htmlFor="tokenProvider">Token Provider</label>
+        <select
+          id="tokenProvider"
+          name="tokenProvider"
+          value={formData.tokenProvider || ''}
+          onChange={handleSelectChange}
+          className={styles.formGroupSelect}
+        >
+          <option value="">--Select--</option>
+          <option value="OPENAI">OPENAI</option>
+          <option value="ANTHROPIC">ANTHROPIC</option>
+          <option value="MISTRAL">MISTRAL</option>
+          <option value="CUSTOM">CUSTOM</option>
+        </select>
+      </div>
 
-      <Grid item xs={12} sm={6}>
-        <TextField
-          fullWidth
-          size="small"
-          label="Model Name"
+      <div className={styles.formGroup}>
+        <label className={styles.formGroupLabel} htmlFor="modelName">Model Name</label>
+        <input
+          type="text"
+          id="modelName"
           name="modelName"
           value={formData.modelName || ''}
           onChange={handleInputChange}
           placeholder="Enter model name"
+          className={styles.formGroupInput}
         />
-      </Grid>
+      </div>
 
-      <Grid item xs={12} sm={6}>
-        <TextField
-          fullWidth
-          size="small"
-          label="Token Unit Cost"
-          name="tokenUnitCost"
+      <div className={styles.formGroup}>
+        <label className={styles.formGroupLabel} htmlFor="tokenUnitCost">Token Unit Cost</label>
+        <input
           type="number"
+          id="tokenUnitCost"
+          name="tokenUnitCost"
           value={formData.tokenUnitCost || ''}
           onChange={handleInputChange}
           placeholder="Enter cost"
+          className={styles.formGroupInput}
         />
-      </Grid>
+      </div>
 
-      <Grid item xs={12} sm={6}>
-        <FormControl fullWidth size="small">
-          <InputLabel>Calculation Method</InputLabel>
-          <Select
-            name="calculationMethod"
-            value={formData.calculationMethod || ''}
-            onChange={handleSelectChange}
-            label="Calculation Method"
-          >
-            <MenuItem value="">--Select--</MenuItem>
-            <MenuItem value="FIXED">Fixed</MenuItem>
-            <MenuItem value="DYNAMIC">Dynamic</MenuItem>
-            <MenuItem value="HYBRID">Hybrid</MenuItem>
-          </Select>
-        </FormControl>
-      </Grid>
+      <div className={styles.formGroup}>
+        <label className={styles.formGroupLabel} htmlFor="calculationMethod">Calculation Method</label>
+        <select
+          id="calculationMethod"
+          name="calculationMethod"
+          value={formData.calculationMethod || ''}
+          onChange={handleSelectChange}
+          className={styles.formGroupSelect}
+        >
+          <option value="">--Select--</option>
+          <option value="FIXED">FIXED</option>
+          <option value="DYNAMIC">DYNAMIC</option>
+          <option value="HYBRID">HYBRID</option>
+        </select>
+      </div>
 
-      <Grid item xs={12} sm={6}>
-        <TextField
-          fullWidth
-          size="small"
-          label="Quota"
-          name="quota"
+      <div className={styles.formGroup}>
+        <label className={styles.formGroupLabel} htmlFor="quota">Quota</label>
+        <input
           type="number"
+          id="quota"
+          name="quota"
           value={formData.quota || ''}
           onChange={handleInputChange}
           placeholder="Enter quota"
+          className={styles.formGroupInput}
         />
-      </Grid>
+      </div>
 
-      <Grid item xs={12} sm={6}>
-        <TextField
-          fullWidth
-          size="small"
-          label="Prompt Template"
+      <div className={styles.formGroup}>
+        <label className={styles.formGroupLabel} htmlFor="promptTemplate">Prompt Template</label>
+        <input
+          type="text"
+          id="promptTemplate"
           name="promptTemplate"
           value={formData.promptTemplate || ''}
           onChange={handleInputChange}
           placeholder="Enter prompt"
+          className={styles.formGroupInput}
         />
-      </Grid>
+      </div>
 
-      <Grid item xs={12} sm={6}>
-        <FormControl fullWidth size="small">
-          <InputLabel>Inference Priority</InputLabel>
-          <Select
-            name="inferencePriority"
-            value={formData.inferencePriority || ''}
-            onChange={handleSelectChange}
-            label="Inference Priority"
-          >
-            <MenuItem value="">--Select--</MenuItem>
-            <MenuItem value="LOW">Low</MenuItem>
-            <MenuItem value="MEDIUM">Medium</MenuItem>
-            <MenuItem value="HIGH">High</MenuItem>
-          </Select>
-        </FormControl>
-      </Grid>
+      <div className={styles.formGroup}>
+        <label className={styles.formGroupLabel} htmlFor="inferencePriority">Inference Priority</label>
+        <select
+          id="inferencePriority"
+          name="inferencePriority"
+          value={formData.inferencePriority || ''}
+          onChange={handleSelectChange}
+          className={styles.formGroupSelect}
+        >
+          <option value="">--Select--</option>
+          <option value="LOW">LOW</option>
+          <option value="MEDIUM">MEDIUM</option>
+          <option value="HIGH">HIGH</option>
+        </select>
+      </div>
 
-      <Grid item xs={12} sm={6}>
-        <FormControl fullWidth size="small">
-          <InputLabel>Compute Tier</InputLabel>
-          <Select
-            name="computeTier"
-            value={formData.computeTier || ''}
-            onChange={handleSelectChange}
-            label="Compute Tier"
-          >
-            <MenuItem value="">--Select--</MenuItem>
-            <MenuItem value="STANDARD">Standard</MenuItem>
-            <MenuItem value="PREMIUM">Premium</MenuItem>
-            <MenuItem value="GPU_OPTIMIZED">GPU Optimized</MenuItem>
-          </Select>
-        </FormControl>
-      </Grid>
-    </Grid>
+      <div className={styles.formGroup}>
+        <label className={styles.formGroupLabel} htmlFor="computeTier">Compute Tier</label>
+        <select
+          id="computeTier"
+          name="computeTier"
+          value={formData.computeTier || ''}
+          onChange={handleSelectChange}
+          className={styles.formGroupSelect}
+        >
+          <option value="">--Select--</option>
+          <option value="STANDARD">STANDARD</option>
+          <option value="PREMIUM">PREMIUM</option>
+          <option value="GPU_OPTIMIZED">GPU_OPTIMIZED</option>
+        </select>
+      </div>
+    </div>
   );
 };
 

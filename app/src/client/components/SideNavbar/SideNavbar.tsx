@@ -8,10 +8,9 @@ interface SidebarProps {
   onTabClick: (tabName: string) => void;
 }
 
-// Define the type for each tab object
 interface Tab {
   name: string;
-  icon: JSX.Element; // JSX.Element is the type for React elements
+  icon: JSX.Element; 
 }
 
 function SideNavbar({ activeTab, onTabClick }: SidebarProps): JSX.Element { // Specify the return type as JSX.Element
@@ -64,7 +63,7 @@ function SideNavbar({ activeTab, onTabClick }: SidebarProps): JSX.Element { // S
       ),
     },
     {
-      name: 'Rate Plan',
+      name: 'Rate Plans',
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="19" viewBox="0 0 18 19" fill="none">
           <g clipPath="url(#clip0_2599_1469)">
@@ -72,6 +71,21 @@ function SideNavbar({ activeTab, onTabClick }: SidebarProps): JSX.Element { // S
           </g>
           <defs>
             <clipPath id="clip0_2599_1469">
+              <rect width="18" height="18" fill="white" transform="translate(0 0.976807)"/>
+            </clipPath>
+          </defs>
+        </svg>
+      ),
+    },
+    {
+      name: 'Subscriptions',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="19" viewBox="0 0 18 19" fill="none">
+          <g clipPath="url(#clip0_2599_1484)">
+            <path d="M8.25 8.47681V11.4768M8.25 11.4768H11.25M8.25 11.4768L9.40125 10.2731C9.83178 9.85928 10.3549 9.5543 10.9271 9.38349C11.4993 9.21268 12.1039 9.18098 12.6908 9.29102C13.2778 9.40107 13.8299 9.64968 14.3013 10.0162C14.7728 10.3827 15.1499 10.8564 15.4012 11.3981M12 2.47681V5.47681M15.75 14.4768L14.5987 15.6806C14.1682 16.0943 13.6451 16.3993 13.0729 16.5701C12.5007 16.7409 11.8961 16.7726 11.3091 16.6626C10.7222 16.5525 10.1701 16.3039 9.69868 15.9374C9.22724 15.571 8.85014 15.0972 8.59875 14.5556M15.75 14.4768V17.4768M15.75 14.4768H12.75M15.75 7.35181V5.47681C15.75 5.07898 15.592 4.69745 15.3107 4.41615C15.0294 4.13484 14.6478 3.97681 14.25 3.97681H3.75C3.35218 3.97681 2.97064 4.13484 2.68934 4.41615C2.40804 4.69745 2.25 5.07898 2.25 5.47681V15.9768C2.25 16.3746 2.40804 16.7562 2.68934 17.0375C2.97064 17.3188 3.35218 17.4768 3.75 17.4768H6.975M2.25 8.47681H5.25M6 2.47681V5.47681" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"/>
+          </g>
+          <defs>
+            <clipPath id="clip0_2599_1484">
               <rect width="18" height="18" fill="white" transform="translate(0 0.976807)"/>
             </clipPath>
           </defs>
@@ -107,21 +121,7 @@ function SideNavbar({ activeTab, onTabClick }: SidebarProps): JSX.Element { // S
 </svg>
       ),
     },
-    {
-      name: 'Subscriptions',
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="19" viewBox="0 0 18 19" fill="none">
-          <g clipPath="url(#clip0_2599_1484)">
-            <path d="M8.25 8.47681V11.4768M8.25 11.4768H11.25M8.25 11.4768L9.40125 10.2731C9.83178 9.85928 10.3549 9.5543 10.9271 9.38349C11.4993 9.21268 12.1039 9.18098 12.6908 9.29102C13.2778 9.40107 13.8299 9.64968 14.3013 10.0162C14.7728 10.3827 15.1499 10.8564 15.4012 11.3981M12 2.47681V5.47681M15.75 14.4768L14.5987 15.6806C14.1682 16.0943 13.6451 16.3993 13.0729 16.5701C12.5007 16.7409 11.8961 16.7726 11.3091 16.6626C10.7222 16.5525 10.1701 16.3039 9.69868 15.9374C9.22724 15.571 8.85014 15.0972 8.59875 14.5556M15.75 14.4768V17.4768M15.75 14.4768H12.75M15.75 7.35181V5.47681C15.75 5.07898 15.592 4.69745 15.3107 4.41615C15.0294 4.13484 14.6478 3.97681 14.25 3.97681H3.75C3.35218 3.97681 2.97064 4.13484 2.68934 4.41615C2.40804 4.69745 2.25 5.07898 2.25 5.47681V15.9768C2.25 16.3746 2.40804 16.7562 2.68934 17.0375C2.97064 17.3188 3.35218 17.4768 3.75 17.4768H6.975M2.25 8.47681H5.25M6 2.47681V5.47681" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"/>
-          </g>
-          <defs>
-            <clipPath id="clip0_2599_1484">
-              <rect width="18" height="18" fill="white" transform="translate(0 0.976807)"/>
-            </clipPath>
-          </defs>
-        </svg>
-      ),
-    },
+    
     {
       name: 'Invoices',
       icon: (
@@ -137,21 +137,7 @@ function SideNavbar({ activeTab, onTabClick }: SidebarProps): JSX.Element { // S
         </svg>
       ),
     },
-    {
-      name: 'Payments',
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="19" viewBox="0 0 18 19" fill="none">
-          <g clipPath="url(#clip0_2599_1494)">
-            <path d="M1.5 5.47681H4.5M1.5 8.47681H4.5M1.5 11.4768H4.5M1.5 14.4768H4.5M11.25 2.47681V17.4768M11.25 6.22681H15M11.25 9.97681H15M11.25 13.7268H15M4.5 2.47681H13.5C14.3284 2.47681 15 3.14838 15 3.97681V15.9768C15 16.8052 14.3284 17.4768 13.5 17.4768H4.5C3.67157 17.4768 3 16.8052 3 15.9768V3.97681C3 3.14838 3.67157 2.47681 4.5 2.47681Z" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"/>
-          </g>
-          <defs>
-            <clipPath id="clip0_2599_1494">
-              <rect width="18" height="18" fill="white" transform="translate(0 0.976807)"/>
-            </clipPath>
-          </defs>
-        </svg>
-      ),
-    },
+    
     {
       name: 'Sales Site Builder',
       icon: (
