@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import GeneralDetails from './GeneralDetails';
 import ProductMetadata from './ProductMetadata';
 import ConfigurationStep from './ConfigurationStep';
@@ -12,9 +12,39 @@ type Step = 0 | 1 | 2 | 3 | 4;
 
 const steps = ['General Details', 'Product Metadata', 'Configuration', 'Review'];
 
-const NewProductForm: React.FC = () => {
+interface NewProductFormProps {
+  onSubmit: (formData: ProductFormData) => Promise<void>;
+  onClose: () => void;
+}
+
+const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmit, onClose }) => {
   const [step, setStep] = useState<Step>(0);
   const [productId, setProductId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const [tagKey, setTagKey] = useState('');
+  const [tagValue, setTagValue] = useState('');
+
+  const categoryOptions = ['INTERNAL', 'EXTERNAL', 'PARTNER'];
+
+  const handleAddTag = (key: string, value: string) => {
+    updateFormData({ tags: [...(formData.tags || []), { key, value }] });
+  };
+
+  const handleRemoveTag = (key: string) => {
+    updateFormData({ tags: formData.tags.filter(tag => tag.key !== key) });
+  };
+
+  const handleAddLabel = (key: string, value: string) => {
+    const newLabels = { ...formData.labels, [key]: value };
+    updateFormData({ labels: newLabels });
+  };
+
+  const handleRemoveLabel = (key: string) => {
+    const newLabels = { ...formData.labels };
+    delete newLabels[key];
+    updateFormData({ labels: newLabels });
+  };
 
   const [formData, setFormData] = useState<ProductFormData>({
     productName: '',
@@ -31,21 +61,21 @@ const NewProductForm: React.FC = () => {
     billable: false,
     auditLogId: '',
     linkedRatePlans: [],
-    tags: { key1: 'value1', key2: 'value2' },
-    labels: { label1: 'A', label2: 'B' },
+    tags: [],
+    labels: {},
 
     endpointUrl: '',
-    authType: 'NONE',
+    authType: '',
     payloadMetric: '',
     rateLimitPolicy: '',
     granularity: '',
     grouping: '',
     caching: false,
-    latencyClass: 'LOW',
+    latencyClass: '',
 
     size: '',
     format: '',
-    compression: 'NONE',
+    compression: '',
     encoding: '',
     schema: '',
     deliveryFrequency: '',
@@ -55,10 +85,10 @@ const NewProductForm: React.FC = () => {
 
     queryTemplate: '',
     dbType: '',
-    freshness: 'REALTIME',
-    executionFrequency: 'ON_DEMAND',
+    freshness: '',
+    executionFrequency: '',
     expectedRowRange: '',
-    joinComplexity: 'LOW',
+    joinComplexity: '',
     resultSize: '',
     cached: false,
 
@@ -97,9 +127,11 @@ const NewProductForm: React.FC = () => {
           billable: formData.billable,
           auditLogId: formData.auditLogId,
           linkedRatePlans: formData.linkedRatePlans,
-          tags: formData.tags,
+          tags: formData.tags.reduce((acc, tag) => ({ ...acc, [tag.key]: tag.value }), {}),
           labels: formData.labels,
         };
+
+        console.log('Sending base payload:', basePayload);
 
         const res = await fetch('http://13.230.194.245:8080/api/products', {
           method: 'POST',
@@ -108,15 +140,22 @@ const NewProductForm: React.FC = () => {
         });
 
         const responseText = await res.text();
+        console.log('Response:', responseText);
 
         if (!res.ok) {
           throw new Error(`Product creation failed: ${responseText}`);
         }
 
-        const { productId } = JSON.parse(responseText);
-        setProductId(productId);
+        const responseJson = JSON.parse(responseText);
+        if (!responseJson.productId) {
+          throw new Error('Invalid response: productId missing');
+        }
+
+        setProductId(responseJson.productId);
         Swal.fire('Success', 'Base Product Created', 'success');
       } catch (err: any) {
+        console.error('Error details:', err);
+        setError(err.message);
         Swal.fire('Error', err.message, 'error');
         return;
       }
@@ -129,7 +168,7 @@ const NewProductForm: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!productId) {
-      Swal.fire('Error', 'Product ID missing. Please complete earlier steps.', 'error');
+      setError('Product ID missing. Please complete earlier steps.');
       return;
     }
 
@@ -201,7 +240,14 @@ const NewProductForm: React.FC = () => {
           throw new Error('Unknown product type');
       }
 
-      const configRes = await fetch(`http://13.230.194.245:8080${configEndpoint}`, {
+      const endpointMap = {
+        'API': 'api',
+        'FlatFile': 'flatfile',
+        'SQLResult': 'sql-result',
+        'LLMToken': 'llm-token'
+      };
+
+      const configRes = await fetch(`http://13.230.194.245:8080/api/products/${productId}/${endpointMap[formData.productType]}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(configBody),
@@ -219,35 +265,38 @@ const NewProductForm: React.FC = () => {
   };
 
   const renderStepTabs = () => (
-    <div style={{ display: 'flex', gap: '32px', marginBottom: '24px', borderBottom: '1px solid #E0E0E0' }}>
+    <div className={styles.stepIndicatorContainer}>
       {steps.map((label, index) => (
         <div
           key={index}
+          className={`${styles.step} ${step >= index ? styles.completed : ''} ${step === index ? styles.active : ''}`}
           onClick={() => setStep(index as Step)}
-          style={{
-            fontFamily: 'Inter, sans-serif',
-            fontSize: '14px',
-            fontWeight: 600,
-            paddingBottom: '8px',
-            borderBottom: step === index ? '2px solid #6D8835' : '2px solid transparent',
-            color: step === index ? '#6D8835' : '#25211F',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease'
-          }}
         >
-          {label}
+          <div className={styles.stepTitle}>{label}</div>
         </div>
       ))}
     </div>
   );
 
   return (
-    <div className="new-product-form">
-      <h2>Create New Pricing Product</h2>
-      {renderStepTabs()}
+    <div className={styles.newProductForm}>
+      <h4 className={styles.title}>Create New Pricing Product</h4>
       <div className={styles.formContainer}>
+        {renderStepTabs()}
         {step === 0 && (
-          <GeneralDetails formData={formData} onChange={updateFormData} onNext={nextStep} />
+          <GeneralDetails
+            formData={formData}
+            onChange={updateFormData}
+            onNext={nextStep}
+            onBack={prevStep}
+            categoryOptions={categoryOptions}
+            addTag={handleAddTag}
+            removeTag={handleRemoveTag}
+            tagKey={tagKey}
+            tagValue={tagValue}
+            setTagKey={setTagKey}
+            setTagValue={setTagValue}
+          />
         )}
         {step === 1 && (
           <ProductMetadata
@@ -255,6 +304,17 @@ const NewProductForm: React.FC = () => {
             onChange={updateFormData}
             onNext={nextStep}
             onBack={prevStep}
+            categoryOptions={[]}
+            subCategoryOptions={[]}
+            unitOptions={[]}
+            taxOptions={[]}
+            unitTypeOptions={[]}
+            labelKey={tagKey}
+            labelValue={tagValue}
+            setLabelKey={setTagKey}
+            setLabelValue={setTagValue}
+            addLabel={handleAddLabel}
+            removeLabel={handleRemoveLabel}
           />
         )}
         {step === 2 && (

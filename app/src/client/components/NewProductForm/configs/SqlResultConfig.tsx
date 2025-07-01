@@ -1,16 +1,6 @@
 import React from 'react';
-import {
-  Grid,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  SelectChangeEvent,
-  Checkbox,
-  FormControlLabel
-} from '@mui/material';
 import { ProductFormData } from '../../../../types/productTypes';
+import styles from './SqlResultConfig.module.css';
 
 interface Props {
   formData: ProductFormData;
@@ -18,134 +8,139 @@ interface Props {
 }
 
 const SqlResultConfig: React.FC<Props> = ({ formData, setFormData }) => {
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({ [name]: type === 'checkbox' ? checked : value });
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value, type, checked } = e.target as HTMLInputElement;
+    setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
   };
 
-  const handleSelectChange = (e: SelectChangeEvent) => {
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData({ [name]: value });
+    setFormData({ ...formData, [name]: value });
   };
 
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={12}>
-        <TextField
-          fullWidth
-          multiline
-          rows={3}
-          label="Query Template"
+    <div className={styles.formGrid}>
+      <div className={styles.formGroup}>
+        <label className={styles.formGroupLabel} htmlFor="queryTemplate">Query Template</label>
+        <textarea
+          id="queryTemplate"
           name="queryTemplate"
           value={formData.queryTemplate || ''}
           onChange={handleInputChange}
-        />
-      </Grid>
+          rows={3}
+          className={styles.formGroupInput}
+          placeholder="Enter query template"
+        ></textarea>
+      </div>
 
-      <Grid item xs={6}>
-        <FormControl fullWidth size="small">
-          <InputLabel>Database Type</InputLabel>
-          <Select
-            name="dbType"
-            value={formData.dbType || ''}
-            onChange={handleSelectChange}
-            label="Database Type"
-          >
-            <MenuItem value="">--Select--</MenuItem>
-            <MenuItem value="MYSQL">MySQL</MenuItem>
-            <MenuItem value="POSTGRES">Postgres</MenuItem>
-            <MenuItem value="SQLSERVER">SQL Server</MenuItem>
-            <MenuItem value="ORACLE">Oracle</MenuItem>
-          </Select>
-        </FormControl>
-      </Grid>
+      <div className={styles.formGroup}>
+        <label className={styles.formGroupLabel} htmlFor="dbType">Database Type</label>
+        <select
+          id="dbType"
+          name="dbType"
+          value={formData.dbType || ''}
+          onChange={handleSelectChange}
+          className={styles.formGroupSelect}
+          defaultValue=""
+        >
+          <option value="">--Select--</option>
+          <option value="MYSQL">MYSQL</option>
+          <option value="POSTGRES">POSTGRES</option>
+          <option value="SQLSERVER">SQLSERVER</option>
+          <option value="ORACLE">ORACLE</option>
+        </select>
+      </div>
 
-      <Grid item xs={6}>
-        <FormControl fullWidth size="small">
-          <InputLabel>Freshness</InputLabel>
-          <Select
-            name="freshness"
-            value={formData.freshness || ''}
-            onChange={handleSelectChange}
-            label="Freshness"
-          >
-            <MenuItem value="">--Select--</MenuItem>
-            <MenuItem value="REALTIME">Real-time</MenuItem>
-            <MenuItem value="HOURLY">Hourly</MenuItem>
-            <MenuItem value="DAILY">Daily</MenuItem>
-          </Select>
-        </FormControl>
-      </Grid>
+      <div className={styles.formGroup}>
+        <label className={styles.formGroupLabel} htmlFor="freshness">Freshness</label>
+        <select
+          id="freshness"
+          name="freshness"
+          value={formData.freshness || ''}
+          onChange={handleSelectChange}
+          className={styles.formGroupSelect}
+          defaultValue=""
+        >
+          <option value="">--Select--</option>
+          <option value="REALTIME">REALTIME</option>
+          <option value="HOURLY">HOURLY</option>
+          <option value="DAILY">DAILY</option>
+        </select>
+      </div>
 
-      <Grid item xs={6}>
-        <FormControl fullWidth size="small">
-          <InputLabel>Execution Frequency</InputLabel>
-          <Select
-            name="executionFrequency"
-            value={formData.executionFrequency || ''}
-            onChange={handleSelectChange}
-            label="Execution Frequency"
-          >
-            <MenuItem value="">--Select--</MenuItem>
-            <MenuItem value="ON_DEMAND">On Demand</MenuItem>
-            <MenuItem value="SCHEDULED">Scheduled</MenuItem>
-            <MenuItem value="EVENT_DRIVEN">Event Driven</MenuItem>
-          </Select>
-        </FormControl>
-      </Grid>
+      <div className={styles.formGroup}>
+        <label className={styles.formGroupLabel} htmlFor="executionFrequency">Execution Frequency</label>
+        <select
+          id="executionFrequency"
+          name="executionFrequency"
+          value={formData.executionFrequency || ''}
+          onChange={handleSelectChange}
+          className={styles.formGroupSelect}
+          defaultValue=""
+        >
+          <option value="">--Select--</option>
+          <option value="ON_DEMAND">ON_DEMAND</option>
+          <option value="SCHEDULED">SCHEDULED</option>
+          <option value="EVENT_DRIVEN">EVENT_DRIVEN</option>
+        </select>
+      </div>
 
-      <Grid item xs={6}>
-        <TextField
-          fullWidth
-          size="small"
-          label="Expected Row Range"
+      <div className={styles.formGroup}>
+        <label className={styles.formGroupLabel} htmlFor="expectedRowRange">Expected Row Range</label>
+        <input
+          type="text"
+          id="expectedRowRange"
           name="expectedRowRange"
           value={formData.expectedRowRange || ''}
           onChange={handleInputChange}
+          className={styles.formGroupInput}
+          placeholder="Enter expected row range"
         />
-      </Grid>
+      </div>
 
-      <Grid item xs={6}>
-        <FormControl fullWidth size="small">
-          <InputLabel>Join Complexity</InputLabel>
-          <Select
-            name="joinComplexity"
-            value={formData.joinComplexity || ''}
-            onChange={handleSelectChange}
-            label="Join Complexity"
-          >
-            <MenuItem value="">--Select--</MenuItem>
-            <MenuItem value="LOW">Low</MenuItem>
-            <MenuItem value="MEDIUM">Medium</MenuItem>
-            <MenuItem value="HIGH">High</MenuItem>
-          </Select>
-        </FormControl>
-      </Grid>
+      <div className={styles.formGroup}>
+        <label className={styles.formGroupLabel} htmlFor="joinComplexity">Join Complexity</label>
+        <select
+          id="joinComplexity"
+          name="joinComplexity"
+          value={formData.joinComplexity || ''}
+          onChange={handleSelectChange}
+          className={styles.formGroupSelect}
+          defaultValue=""
+        >
+          <option value="">--Select--</option>
+          <option value="LOW">LOW</option>
+          <option value="MEDIUM">MEDIUM</option>
+          <option value="HIGH">HIGH</option>
+        </select>
+      </div>
 
-      <Grid item xs={6}>
-        <TextField
-          fullWidth
-          size="small"
-          label="Result Size"
+      <div className={styles.formGroup}>
+        <label className={styles.formGroupLabel} htmlFor="resultSize">Result Size</label>
+        <input
+          type="text"
+          id="resultSize"
           name="resultSize"
           value={formData.resultSize || ''}
           onChange={handleInputChange}
+          className={styles.formGroupInput}
+          placeholder="Enter result size"
         />
-      </Grid>
+      </div>
 
-      <Grid item xs={12}>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={!!formData.cached}
-              name="cached"
-              onChange={handleInputChange}
-            />
-          }
-          label="Cached Result"
+      <div className={styles.formGroup}>
+        <label className={styles.formGroupLabel} htmlFor="cached">Cached Result</label>
+        <input
+          type="checkbox"
+          id="cached"
+          name="cached"
+          checked={!!formData.cached}
+          onChange={handleInputChange}
         />
-      </Grid>
-    </Grid>
+      </div>
+    </div>
   );
 };
 

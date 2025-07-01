@@ -1,20 +1,10 @@
 import React from 'react';
-import {
-  Grid,
-  TextField,
-  Button,
-  Checkbox,
-  FormControlLabel,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
-  SelectChangeEvent,
-} from '@mui/material';
+import styles from './ConfigurationStep.module.css';
 import { ProductFormData } from '../../../types/productTypes';
 import LlmTokenConfig from './configs/LlmTokenConfig';
 import FlatFileConfig from './configs/FlatFileConfig';
 import SqlResultConfig from './configs/SqlResultConfig';
+
 
 interface ConfigurationStepProps {
   formData: ProductFormData;
@@ -34,7 +24,7 @@ const ConfigurationStep: React.FC<ConfigurationStepProps> = ({
     onChange({ [name]: type === 'checkbox' ? checked : value });
   };
 
-  const handleSelectChange = (e: SelectChangeEvent) => {
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     onChange({ [name]: value });
   };
@@ -43,105 +33,134 @@ const ConfigurationStep: React.FC<ConfigurationStepProps> = ({
     switch (formData.productType) {
       case 'API':
         return (
-          <>
-            <TextField
-              fullWidth
-              label="Endpoint URL"
-              name="endpointUrl"
-              value={formData.endpointUrl}
-              onChange={handleInputChange}
-              margin="normal"
-            />
+          <div className={styles.formGrid}>
+            <div className={styles.formGroup}>
+              <label className={styles.formGroupLabel} htmlFor="endpointUrl">
+                Endpoint URL
+              </label>
+              <input
+                id="endpointUrl"
+                name="endpointUrl"
+                type="text"
+                value={formData.endpointUrl}
+                onChange={handleInputChange}
+                className={styles.formGroupInput}
+                placeholder="Enter endpoint URL"
+              />
+            </div>
 
-            <FormControl fullWidth margin="normal">
-              <InputLabel>Authentication Type</InputLabel>
-              <Select
+            <div className={styles.formGroup}>
+              <label className={styles.formGroupLabel} htmlFor="authType">
+                Authentication Type
+              </label>
+              <select
+                id="authType"
                 name="authType"
                 value={formData.authType || ''}
                 onChange={handleSelectChange}
-                label="Authentication Type"
+                className={styles.formGroupSelect}
               >
-                <MenuItem value="NONE">None</MenuItem>
-                <MenuItem value="API_KEY">API Key</MenuItem>
-                <MenuItem value="OAUTH2">OAuth 2.0</MenuItem>
-                <MenuItem value="JWT">JWT</MenuItem>
-                <MenuItem value="BASIC_AUTH">Basic Auth</MenuItem>
-              </Select>
-            </FormControl>
+                <option value="">Select</option>
+                <option value="NONE">NONE</option>
+                <option value="API_KEY">API_KEY</option>
+                <option value="OAUTH2">OAUTH2</option>
+                <option value="BASIC_AUTH">BASIC_AUTH</option>
+              </select>
+            </div>
 
-            <TextField
-              fullWidth
-              label="Payload Metric"
-              name="payloadMetric"
-              value={formData.payloadMetric}
-              onChange={handleInputChange}
-              margin="normal"
-            />
+            <div className={styles.formGroup}>
+              <label className={styles.formGroupLabel} htmlFor="payloadMetric">
+                Payload Metric
+              </label>
+              <input
+                id="payloadMetric"
+                name="payloadMetric"
+                type="text"
+                value={formData.payloadMetric}
+                onChange={handleInputChange}
+                className={styles.formGroupInput}
+                placeholder="Enter payload metric"
+              />
+            </div>
 
-            <FormControl fullWidth margin="normal">
-              <InputLabel>Rate Limit Policy</InputLabel>
-              <Select
+            <div className={styles.formGroup}>
+              <label className={styles.formGroupLabel} htmlFor="rateLimitPolicy">
+                Rate Limit Policy
+              </label>
+              <input
+                id="rateLimitPolicy"
                 name="rateLimitPolicy"
+                type="text"
                 value={formData.rateLimitPolicy || ''}
-                onChange={handleSelectChange}
-                label="Rate Limit Policy"
-              >
-                <MenuItem value="FIXED_WINDOW">Fixed Window</MenuItem>
-                <MenuItem value="SLIDING_WINDOW">Sliding Window</MenuItem>
-                <MenuItem value="TOKEN_BUCKET">Token Bucket</MenuItem>
-              </Select>
-            </FormControl>
+                onChange={handleInputChange}
+                className={styles.formGroupInput}
+                placeholder="FIXED_WINDOW, SLIDING_WINDOW, TOKEN_BUCKET"
+              />
+            </div>
 
-            <FormControl fullWidth margin="normal">
-              <InputLabel>Granularity</InputLabel>
-              <Select
+            <div className={styles.formGroup}>
+              <label className={styles.formGroupLabel} htmlFor="granularity">
+                Granularity
+              </label>
+              <input
+                id="granularity"
                 name="granularity"
+                type="text"
                 value={formData.granularity || ''}
-                onChange={handleSelectChange}
-                label="Granularity"
-              >
-                <MenuItem value="SECOND">Per Second</MenuItem>
-                <MenuItem value="MINUTE">Per Minute</MenuItem>
-                <MenuItem value="HOUR">Per Hour</MenuItem>
-                <MenuItem value="DAY">Per Day</MenuItem>
-                <MenuItem value="MONTH">Per Month</MenuItem>
-              </Select>
-            </FormControl>
+                onChange={handleInputChange}
+                className={styles.formGroupInput}
+                placeholder="SECOND, MINUTE, HOUR, DAY, MONTH"
+              />
+            </div>
 
-            <TextField
-              fullWidth
-              label="Grouping"
-              name="grouping"
-              value={formData.grouping}
-              onChange={handleInputChange}
-              margin="normal"
-            />
+            <div className={styles.formGroup}>
+              <label className={styles.formGroupLabel} htmlFor="grouping">
+                Grouping
+              </label>
+              <input
+                id="grouping"
+                name="grouping"
+                type="text"
+                value={formData.grouping}
+                onChange={handleInputChange}
+                className={styles.formGroupInput}
+                placeholder="Enter grouping"
+              />
+            </div>
 
-            <FormControl fullWidth margin="normal">
-              <InputLabel>Latency Class</InputLabel>
-              <Select
+            <div className={styles.formGroup}>
+              <label className={styles.formGroupLabel} htmlFor="latencyClass">
+                Latency Class
+              </label>
+              <select
+                id="latencyClass"
                 name="latencyClass"
                 value={formData.latencyClass || ''}
                 onChange={handleSelectChange}
-                label="Latency Class"
+                className={styles.formGroupSelect}
               >
-                <MenuItem value="LOW">Low (&lt;100ms)</MenuItem>
-                <MenuItem value="MEDIUM">Medium (100–500ms)</MenuItem>
-                <MenuItem value="HIGH">High (&gt;500ms)</MenuItem>
-              </Select>
-            </FormControl>
+                <option value="">Select</option>
+                <option value="LOW">LOW (&lt;100ms)</option>
+                <option value="MEDIUM">MEDIUM (100–500ms)</option>
+                <option value="HIGH">HIGH (&gt;500ms)</option>
+              </select>
+            </div>
 
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={!!formData.caching}
+            <div className={styles.formGroup}>
+              <div className={styles.checkbox}>
+                <input
+                  type="checkbox"
+                  id="caching"
                   name="caching"
+                  checked={!!formData.caching}
                   onChange={handleInputChange}
                 />
-              }
-              label="Enable Caching"
-            />
-          </>
+                <label className={styles.checkboxLabel} htmlFor="caching">
+                  Enable Caching
+                </label>
+              </div>
+            </div>
+          </div>
         );
 
       case 'LLMToken':
@@ -181,24 +200,31 @@ const ConfigurationStep: React.FC<ConfigurationStepProps> = ({
         onNext();
       }}
     >
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          {renderFields()}
-        </Grid>
+      {renderFields()}
 
-        <Grid item xs={6}>
-          <Button variant="outlined" onClick={onBack}>
+        {/* <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
+          <button type="button" onClick={onBack}>
             Back
-          </Button>
-        </Grid>
-
-        <Grid item xs={6} style={{ textAlign: 'right' }}>
-          <Button variant="contained" color="primary" type="submit">
+          </button>
+          <button type="submit">
             Next
-          </Button>
-        </Grid>
-      </Grid>
-    </form>
+          </button>
+        </div> */}
+          <div className={styles.buttonGroup}>
+             <button
+               onClick={onBack}
+               className={styles.backButton}
+             >
+               Back
+             </button>
+             <button
+               type="submit"
+               className={styles.nextButton}
+             >
+               Next
+             </button>
+          </div>
+        </form>
   );
 };
 

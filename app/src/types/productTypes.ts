@@ -13,7 +13,7 @@ export interface ProductFormData {
   billable: boolean;
   auditLogId?: string;
   linkedRatePlans: string[];
-  tags: Record<string, any>;
+  tags: { key: string; value: string }[];
   labels: Record<string, string>;
   
   // API specific
