@@ -1,8 +1,16 @@
 import React, { useState } from 'react';
 import './Extras.css';
 
-export default function Extras(): JSX.Element {
+interface ExtrasProps {
+  noUpperLimit: boolean;
+}
+
+export default function Extras({ noUpperLimit }: ExtrasProps): JSX.Element {
   const [activeSections, setActiveSections] = useState<string[]>([]);
+  const [freemiumType, setFreemiumType] = useState('');
+  const [minimumUsage, setMinimumUsage] = useState('');
+const [minimumCharge, setMinimumCharge] = useState('');
+
 
   const toggleSection = (section: string) => {
     setActiveSections(prev =>
@@ -37,31 +45,33 @@ export default function Extras(): JSX.Element {
         {activeSections.includes('setupFee') && (
           <div className="section-content">
             <label>Enter one-time Setup Fee <span className="optional">(optional)</span></label>
-            <input type="text" value="$22" />
+            <input type="text" placeholder="$22" />
             <label>Application Timing</label>
-            <input type="text" value="$22" />
+            <input type="text" placeholder="$22" />
             <label>Invoice Description</label>
             <textarea placeholder="Invoice Description"></textarea>
           </div>
         )}
       </div>
 
-      {/* Overage Charges */}
-      <div className="section">
-        {renderHeader('Overage Charges', 'overageCharges')}
-        {activeSections.includes('overageCharges') && (
-          <div className="section-content">
-            <label>Overage unit rate</label>
-            <input type="text" placeholder="Placeholder" />
-            <label>Grace buffer <span className="optional">(optional)</span></label>
-            <input type="text" placeholder="Placeholder" />
-          </div>
-        )}
-      </div>
+      {/* Overage Charges - only visible if noUpperLimit is false */}
+      {!noUpperLimit && (
+        <div className="section">
+          {renderHeader('Overage Charges', 'overageCharges')}
+          {activeSections.includes('overageCharges') && (
+            <div className="section-content">
+              <label>Overage unit rate</label>
+              <input type="text" placeholder="Placeholder" />
+              <label>Grace buffer <span className="optional">(optional)</span></label>
+              <input type="text" placeholder="Placeholder" />
+            </div>
+          )}
+        </div>
+      )}
 
-      {/* Discounts & Promotions */}
+      {/* Discounts */}
       <div className="section">
-        {renderHeader('Discounts ', 'discounts')}
+        {renderHeader('Discounts', 'discounts')}
         {activeSections.includes('discounts') && (
           <div className="section-content">
             <label>Discount Type</label>
@@ -93,8 +103,27 @@ export default function Extras(): JSX.Element {
         {activeSections.includes('freemium') && (
           <div className="section-content">
             <label>Freemium Type</label>
-            <select><option>Placeholder</option></select>
-            <label>Validity Period</label>
+            <select value={freemiumType} onChange={(e) => setFreemiumType(e.target.value)}>
+              <option value="">--Select--</option>
+              <option value="free_units">Free Units</option>
+              <option value="free_trial">Free Trial Duration</option>
+              <option value="units_per_duration">Free Units for Duration</option>
+            </select>
+
+            {(freemiumType === 'free_units' || freemiumType === 'units_per_duration') && (
+              <>
+                <label>Select Free Units</label>
+                <input type="text" placeholder="Enter Free Units" />
+              </>
+            )}
+
+            {(freemiumType === 'free_trial' || freemiumType === 'units_per_duration') && (
+              <>
+                <label>Select Free Trial Duration</label>
+                <input type="text" placeholder="Enter Trial Duration" />
+              </>
+            )}
+
             <div className="date-range">
               <div className="date-input">
                 <label>Start Date</label>
@@ -111,16 +140,36 @@ export default function Extras(): JSX.Element {
 
       {/* Minimum Commitment */}
       <div className="section">
-        {renderHeader('Minimum Commitment', 'commitment')}
-        {activeSections.includes('commitment') && (
-          <div className="section-content">
-            <label>Minimum Usage</label>
-            <input type="text" placeholder="Placeholder" />
-            <label>Minimum Charge</label>
-            <input type="text" placeholder="Placeholder" />
-          </div>
-        )}
-      </div>
+  {renderHeader('Minimum Commitment', 'commitment')}
+  {activeSections.includes('commitment') && (
+    <div className="section-content">
+      <label>Minimum Usage</label>
+      <input
+        type="text"
+        placeholder="Enter usage"
+        value={minimumUsage}
+        onChange={(e) => {
+          setMinimumUsage(e.target.value);
+          if (e.target.value) setMinimumCharge(''); // Clear charge
+        }}
+        disabled={!!minimumCharge}
+      />
+
+      <label>Minimum Charge</label>
+      <input
+        type="text"
+        placeholder="Enter charge"
+        value={minimumCharge}
+        onChange={(e) => {
+          setMinimumCharge(e.target.value);
+          if (e.target.value) setMinimumUsage(''); // Clear usage
+        }}
+        disabled={!!minimumUsage}
+      />
+    </div>
+  )}
+</div>
+
 
       {/* Reset Period */}
       <div className="section">

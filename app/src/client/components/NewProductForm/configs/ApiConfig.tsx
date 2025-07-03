@@ -5,9 +5,10 @@ import styles from './ApiConfig.module.css';
 interface Props {
   formData: ProductFormData;
   setFormData: (data: Partial<ProductFormData>) => void;
+  errors: { [key: string]: string };
 }
 
-const ApiConfig: React.FC<Props> = ({ formData, setFormData }) => {
+const ApiConfig: React.FC<Props> = ({ formData, setFormData, errors }) => {
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -24,7 +25,7 @@ const ApiConfig: React.FC<Props> = ({ formData, setFormData }) => {
     <div className={styles.formGrid}>
       <div className={styles.formGroup}>
         <label className={styles.formGroupLabel} htmlFor="endpointUrl">
-          Endpoint URL <span className="text-danger">*</span>
+          Endpoint URL *
         </label>
         <input
           id="endpointUrl"
@@ -32,9 +33,14 @@ const ApiConfig: React.FC<Props> = ({ formData, setFormData }) => {
           type="url"
           value={formData.endpointUrl || ''}
           onChange={handleInputChange}
-          className={styles.formGroupInput}
+          className={`${styles.formGroupInput} ${errors.endpointUrl ? styles.error : ''}`}
+          placeholder="Ex:https://api.example.com/endpoint"
           required
         />
+        {errors.endpointUrl && 
+          <div className={styles.errorMessage}>{errors.endpointUrl}</div>
+        }
+        
       </div>
 
       <div className={styles.formGroup}>
@@ -46,13 +52,17 @@ const ApiConfig: React.FC<Props> = ({ formData, setFormData }) => {
           name="authType"
           value={formData.authType || ''}
           onChange={handleSelectChange}
-          className={styles.formGroupSelect}
+          className={`${styles.formGroupSelect} ${errors.authType ? styles.error : ''}`}
         >
-          <option value="">None</option>
+          <option value="">--Select--</option>
+          <option value="None">None</option>
           <option value="API_KEY">API_KEY</option>
           <option value="OAUTH2">OAUTH2</option>
           <option value="BASIC_AUTH">BASIC_AUTH</option>
         </select>
+        {errors.authType && 
+          <div className={styles.errorMessage}>{errors.authType}</div>
+        }
       </div>
 
       <div className={styles.formGroup}>
@@ -65,8 +75,12 @@ const ApiConfig: React.FC<Props> = ({ formData, setFormData }) => {
           type="text"
           value={formData.payloadMetric || ''}
           onChange={handleInputChange}
-          className={styles.formGroupInput}
+          className={`${styles.formGroupInput} ${errors.payloadMetric ? styles.error : ''}`}
+          placeholder="EnterPayload Metric"
         />
+        {errors.payloadMetric && 
+          <div className={styles.errorMessage}>{errors.payloadMetric}</div>
+        }
       </div>
 
       <div className={styles.formGroup}>
@@ -79,9 +93,13 @@ const ApiConfig: React.FC<Props> = ({ formData, setFormData }) => {
           name="rateLimitPolicy"
           value={formData.rateLimitPolicy || ''}
           onChange={handleInputChange}
-          placeholder="FIXED_WINDOW, SLIDING_WINDOW, TOKEN_BUCKET"
-          className={styles.formGroupInput}
+          className={`${styles.formGroupInput} ${errors.rateLimitPolicy ? styles.error : ''}`}
+          placeholder="Enter Rate Limit Policy"
+          required
         />
+        {errors.rateLimitPolicy && 
+          <div className={styles.errorMessage}>{errors.rateLimitPolicy}</div>
+        }
       </div>
 
       <div className={styles.formGroup}>
@@ -94,13 +112,19 @@ const ApiConfig: React.FC<Props> = ({ formData, setFormData }) => {
           name="granularity"
           value={formData.granularity || ''}
           onChange={handleInputChange}
-          placeholder="SECOND, MINUTE, HOUR, DAY, MONTH"
-          className={styles.formGroupInput}
+          placeholder="Enter Granularity"
+          className={`${styles.formGroupInput} ${errors.granularity ? styles.error : ''}`}
         />
+        {errors.granularity && 
+          <div className={styles.errorMessage}>{errors.granularity}</div>
+        }
       </div>
 
       <div className={styles.formGroup}>
-        <div className={styles.checkbox}>
+        {/* <div className={styles.checkbox}> */}
+        <label className={styles.formGroupLabel} htmlFor="caching">
+             Caching Flag
+          </label>
           <input
             type="checkbox"
             id="caching"
@@ -108,11 +132,9 @@ const ApiConfig: React.FC<Props> = ({ formData, setFormData }) => {
             checked={!!formData.caching}
             onChange={handleInputChange}
           />
-          <label className={styles.checkboxLabel} htmlFor="caching">
-            Enable Caching
-          </label>
+          
         </div>
-      </div>
+      {/* </div> */}
 
       <div className={styles.formGroup}>
         <label className={styles.formGroupLabel} htmlFor="latencyClass">
@@ -130,11 +152,14 @@ const ApiConfig: React.FC<Props> = ({ formData, setFormData }) => {
           <option value="MEDIUM">MEDIUM</option>
           <option value="HIGH">HIGH</option>
         </select>
+        {errors.latencyClass && 
+          <div className={styles.errorMessage}>{errors.latencyClass}</div>
+        }
       </div>
 
       <div className={styles.formGroup}>
         <label className={styles.formGroupLabel} htmlFor="grouping">
-          Response Grouping (Optional)
+          Grouping 
         </label>
         <input
           id="grouping"
@@ -143,14 +168,14 @@ const ApiConfig: React.FC<Props> = ({ formData, setFormData }) => {
           value={formData.grouping || ''}
           onChange={handleInputChange}
           className={styles.formGroupInput}
-          placeholder="e.g., customer_id, region"
+          placeholder="Enter grouping e.g., customer_id, region"
         />
-        <div className={styles.formGroupHelperText}>
-          Comma-separated list of fields to group API responses by for metering
-        </div>
+        {errors.grouping && 
+          <div className={styles.errorMessage}>{errors.grouping}</div>
+        }
       </div>
     </div>
   );
 };
 
-export default ApiConfig;
+export default ApiConfig; 

@@ -1,4 +1,4 @@
-import openSaasBannerWebp from '../../client/static/open-saas-banner.webp';
+import { openSaasBannerWebp } from '../../client/static/images';
 import { DocsUrl } from '../../shared/common';
 import { Link } from 'react-router-dom';
 

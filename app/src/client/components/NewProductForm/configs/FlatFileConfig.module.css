@@ -3,18 +3,27 @@
 .formGrid {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 1rem;
   width: 100%;
 }
 
 .formGroup {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   position: relative;
   width: 100%;
 }
 
+
+.errorMessage {
+  color: var(--color-error-400);
+  font-size: 0.875rem;
+  margin-top: 4px;
+  /* margin-left: 250px; */
+  font-family: var(--font-family-primary);
+  font-weight: 400;
+}
 .formGroupLabel {
   color: var(--color-neutral-1700);
   font-family: var(--font-family-primary);
@@ -25,7 +34,7 @@
   display: block;
   margin-left: 0;
   letter-spacing: 0.2px;
-  margin-left: 250px;
+  /* margin-left: 250px; */
 }
 
 .form-group:hover .form-group-label {
@@ -48,7 +57,7 @@
   font-style: normal;
   font-weight: 400;
   line-height: var(--line-height-body-md);
-  margin-left: 250px;
+  /* margin-left: 250px; */
 }
 
 .form-group input:focus,
@@ -69,7 +78,7 @@
   gap: 12px;
   margin-bottom: 12px;
   width: 420px;
-  margin-left: 250px;
+  /* margin-left: 250px; */
 }
 
 .labelKeyInput,
@@ -159,7 +168,7 @@
   border-radius: var(--border-radius-sm);
   font-size: 14px;
   width: 420px;
-  margin-left: 250px;
+  /* margin-left: 250px; */
 
 }
 

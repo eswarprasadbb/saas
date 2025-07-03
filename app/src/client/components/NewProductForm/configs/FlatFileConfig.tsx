@@ -5,46 +5,13 @@ import { ProductFormData } from '../../../../types/productTypes';
 interface FlatFileConfigProps {
   formData: ProductFormData;
   setFormData: (data: Partial<ProductFormData>) => void;
+  errors: { [key: string]: string };
 }
 
-const FlatFileConfig: React.FC<FlatFileConfigProps> = ({ formData, setFormData }) => {
+const FlatFileConfig: React.FC<FlatFileConfigProps> = ({ formData, setFormData, errors }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({ [name]: value });
-  };
-
-  const formStyles = {
-    container: {
-      display: 'flex' as 'flex',
-      gap: '2px' as '2px',
-      alignItems: 'center' as 'center',
-      marginTop: '20px' as '20px'
-    },
-    field: {
-      flex: '0 0 auto' as '0 0 auto',
-      width: '206px' as '206px',
-      padding: '8px 10px' as '8px 10px',
-      marginLeft: '250px' as '250px'
-    },
-    label: {
-      display: 'block' as 'block',
-      margin: 0 as 0,
-      padding: 0 as 0,
-      marginLeft: '255px' as '255px',
-      color: '#1E1A20' as '#1E1A20'
-    },
-    select: {
-      width: '206px' as '206px',
-      padding: '8px 10px' as '8px 10px'
-    }
-  };
-
-  // Helper function to convert camelCase to title case
-  const toTitleCase = (str: string) => {
-    return str
-      .split(/(?=[A-Z])/)
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(' ');
   };
 
   return (
@@ -63,6 +30,7 @@ const FlatFileConfig: React.FC<FlatFileConfigProps> = ({ formData, setFormData }
           <option value="WEEKLY">WEEKLY</option>
           <option value="MONTHLY">MONTHLY</option>
         </select>
+        {errors.deliveryFrequency && <div className={styles.errorMessage}>{errors.deliveryFrequency}</div>}
       </div>
 
       <div className={styles.formGroup}>
@@ -80,6 +48,7 @@ const FlatFileConfig: React.FC<FlatFileConfigProps> = ({ formData, setFormData }
           <option value="EMAIL">EMAIL</option>
           <option value="API">API</option>
         </select>
+        {errors.accessMethod && <div className={styles.errorMessage}>{errors.accessMethod}</div>}
       </div>
 
       <div className={styles.formGroup}>
@@ -97,27 +66,27 @@ const FlatFileConfig: React.FC<FlatFileConfigProps> = ({ formData, setFormData }
           <option value="XML">XML</option>
           <option value="PARQUET">PARQUET</option>
         </select>
+        {errors.format && <div className={styles.errorMessage}>{errors.format}</div>}
       </div>
 
-     
       <div className={styles.formGroup}>
-            <label className={styles.formGroupLabel} htmlFor="compressionFormat">Compression Format</label>
-            <select
-              name="compressionFormat"
-              value={formData.compression || ''}
-              onChange={(e) => {
-                const value = e.target.value;
-                setFormData({ compression: value });
-              }}
-              className={styles.formGroupSelect}
-            >
-              <option value="">Select compression format</option>
-              <option value="NONE">None</option>
-              <option value="GZIP">GZIP</option>
-              <option value="ZIP">ZIP</option>
-            </select>
-          </div>
-
+        <label className={styles.formGroupLabel} htmlFor="compressionFormat">Compression Format</label>
+        <select
+          name="compression"
+          value={formData.compression || ''}
+          onChange={(e) => {
+            const value = e.target.value;
+            setFormData({ compression: value });
+          }}
+          className={styles.formGroupSelect}
+        >
+          <option value="">Select compression format</option>
+          <option value="NONE">None</option>
+          <option value="GZIP">GZIP</option>
+          <option value="ZIP">ZIP</option>
+        </select>
+        {errors.compression && <div className={styles.errorMessage}>{errors.compression}</div>}
+      </div>
 
       <div className={styles.formGroup}>
         <label className={styles.formGroupLabel} htmlFor="size">Size</label>
@@ -130,6 +99,7 @@ const FlatFileConfig: React.FC<FlatFileConfigProps> = ({ formData, setFormData }
           placeholder="e.g., 10MB, 1000 rows"
           className={styles.formGroupInput}
         />
+        {errors.size && <div className={styles.errorMessage}>{errors.size}</div>}
       </div>
 
       <div className={styles.formGroup}>
@@ -143,6 +113,7 @@ const FlatFileConfig: React.FC<FlatFileConfigProps> = ({ formData, setFormData }
           placeholder="e.g., 30 days"
           className={styles.formGroupInput}
         />
+        {errors.retentionPolicy && <div className={styles.errorMessage}>{errors.retentionPolicy}</div>}
       </div>
 
       <div className={styles.formGroup}>
@@ -156,6 +127,7 @@ const FlatFileConfig: React.FC<FlatFileConfigProps> = ({ formData, setFormData }
           placeholder="e.g., YYYYMMDD_HHMMSS"
           className={styles.formGroupInput}
         />
+        {errors.fileNamingConvention && <div className={styles.errorMessage}>{errors.fileNamingConvention}</div>}
       </div>
     </div>
   );

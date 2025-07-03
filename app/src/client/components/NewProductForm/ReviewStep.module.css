@@ -1,10 +1,20 @@
 @import "../Variables/Variables.css";
 
+.sectionHeading {
+  color: var(--color-neutral-800);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-lg);
+  font-style: normal;
+  font-weight: 600;
+  line-height: var(--line-height-body-lg);
+  margin-bottom: 24px;
+}
+
 .reviewContainer {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  padding: 24px;
+  padding: 10px;
 }
 
 .sectionWrapper {
@@ -21,14 +31,14 @@
   flex: 1;
   min-width: 280px;
   max-width: 350px;
-  /* background: var(--color-neutral-100); */
+  background: var(--color-primary-000);
   border-radius: var(--border-radius-md);
   padding: 24px;
   box-shadow: var(--shadow-sm);
 }
 
 .sectionTitle {
-  margin-top: 16px;
+  /* margin-top: 16px; */
   margin-bottom: 12px;
   color: var(--var-neutral-1700);
 
@@ -41,19 +51,19 @@ line-height: var(--line-height-body-lg);
 }
 
 .section {
-  padding: 16px 0;
+  padding: 10px 0;
  
 }
 
 .reviewItem {
-  margin-bottom: 16px;
+  /* margin-bottom: 16px; */
   color: var(--color-neutral-1400);
 
 /* body/semibold/md */
 font-family: var(--font-family-primary);
 font-size: var(--font-size-md);
 font-style: normal;
-font-weight: 600;
+font-weight: 400;
 line-height: var(--line-height-body-md);
 }
 
@@ -80,7 +90,7 @@ line-height: var(--line-height-body-md);
 }
 
 .backButton {
-  width: 206px;
+  width: 140px;
   height: 40px;
   background-color: var(--color-primary-000);
   color: var(--color-primary-800);
@@ -97,7 +107,7 @@ line-height: var(--line-height-body-md);
 }
 
 .nextButton {
-  width: 206px;
+  width: 140px;
   height: 40px;
   color: var(--color-neutral-white);
   background-color: var(--color-primary-600);

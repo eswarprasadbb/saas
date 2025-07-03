@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './ConfigurationStep.module.css';
 import { ProductFormData } from '../../../types/productTypes';
 import LlmTokenConfig from './configs/LlmTokenConfig';
 import FlatFileConfig from './configs/FlatFileConfig';
 import SqlResultConfig from './configs/SqlResultConfig';
-
+import ApiConfig from './configs/ApiConfig';
 
 interface ConfigurationStepProps {
   formData: ProductFormData;
@@ -13,20 +13,66 @@ interface ConfigurationStepProps {
   onBack: () => void;
 }
 
-const ConfigurationStep: React.FC<ConfigurationStepProps> = ({
-  formData,
-  onChange,
-  onNext,
-  onBack,
-}) => {
+const ConfigurationStep: React.FC<ConfigurationStepProps> = ({ formData, onChange, onNext, onBack }) => {
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     onChange({ [name]: type === 'checkbox' ? checked : value });
+    setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     onChange({ [name]: value });
+    setErrors((prev) => ({ ...prev, [name]: '' }));
+  };
+
+  const validateFields = (): boolean => {
+    const newErrors: { [key: string]: string } = {};
+
+    switch (formData.productType) {
+      case 'API':
+        if (!formData.endpointUrl) newErrors.endpointUrl = 'Endpoint URL is Required';
+        if (!formData.authType) newErrors.authType = 'Authentication Type is Required';
+        if (!formData.payloadMetric) newErrors.payloadMetric = 'Payload Metric is Required';
+        if (!formData.rateLimitPolicy) newErrors.rateLimitPolicy = 'Rate Limit Policy is Required';
+        if (!formData.granularity) newErrors.granularity = 'Granularity is Required';
+        if (!formData.grouping) newErrors.grouping = 'Grouping is Required';
+        if (!formData.latencyClass) newErrors.latencyClass = 'Latency Class is Required';
+        break;
+      case 'FlatFile':
+        if (!formData.format) newErrors.format = 'Format is Required';
+        if (!formData.size) newErrors.size = 'Size is Required';
+        if (!formData.deliveryFrequency) newErrors.deliveryFrequency = 'Delivery Frequency is Required';
+        if (!formData.accessMethod) newErrors.accessMethod = 'Access Method is Required';
+        if (!formData.retentionPolicy) newErrors.retentionPolicy = 'RetentionPolicy is Required';
+        if (!formData.fileNamingConvention) newErrors.fileNamingConvention = 'File Naming Convention is Required';
+        if (!formData.compression) newErrors.compression = 'Compression is Required';
+        break;
+      case 'LLMToken':
+        if (!formData.tokenProvider) newErrors.tokenProvider = 'Token Provider is Required';
+        if (!formData.modelName) newErrors.modelName = 'Model Name is Required';
+        if (formData.tokenUnitCost === undefined) newErrors.tokenUnitCost = 'Token Unit Cost is Required';
+        if (!formData.calculationMethod) newErrors.calculationMethod = 'Calculation Method is Required';
+        if (formData.quota === undefined) newErrors.quota = 'Quota is Required';
+        if (!formData.promptTemplate) newErrors.promptTemplate = 'Prompt Template is Required';
+        if (!formData.inferencePriority) newErrors.inferencePriority = 'Inference Priority is Required';
+        if (!formData.computeTier) newErrors.computeTier = 'Compute Tier is Required';
+        break;
+      case 'SQLResult':
+        if (!formData.queryTemplate) newErrors.queryTemplate = 'Query Template is Required';
+        if (!formData.dbType) newErrors.dbType = 'DB Type is Required';
+        if (!formData.resultSize) newErrors.resultSize = 'Result Size is Required';
+        if (!formData.freshness) newErrors.freshness = 'Freshness is Required';
+        if (!formData.executionFrequency) newErrors.executionFrequency = 'Execution Frequency is Required';
+        if (!formData.expectedRowRange) newErrors.expectedRowRange = 'Expected Row Range is Required';
+        if (!formData.joinComplexity) newErrors.joinComplexity = 'Join Complexity is Required';
+        break;
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const renderFields = () => {
@@ -34,197 +80,48 @@ const ConfigurationStep: React.FC<ConfigurationStepProps> = ({
       case 'API':
         return (
           <div className={styles.formGrid}>
-            <div className={styles.formGroup}>
-              <label className={styles.formGroupLabel} htmlFor="endpointUrl">
-                Endpoint URL
-              </label>
-              <input
-                id="endpointUrl"
-                name="endpointUrl"
-                type="text"
-                value={formData.endpointUrl}
-                onChange={handleInputChange}
-                className={styles.formGroupInput}
-                placeholder="Enter endpoint URL"
-              />
-            </div>
-
-            <div className={styles.formGroup}>
-              <label className={styles.formGroupLabel} htmlFor="authType">
-                Authentication Type
-              </label>
-              <select
-                id="authType"
-                name="authType"
-                value={formData.authType || ''}
-                onChange={handleSelectChange}
-                className={styles.formGroupSelect}
-              >
-                <option value="">Select</option>
-                <option value="NONE">NONE</option>
-                <option value="API_KEY">API_KEY</option>
-                <option value="OAUTH2">OAUTH2</option>
-                <option value="BASIC_AUTH">BASIC_AUTH</option>
-              </select>
-            </div>
-
-            <div className={styles.formGroup}>
-              <label className={styles.formGroupLabel} htmlFor="payloadMetric">
-                Payload Metric
-              </label>
-              <input
-                id="payloadMetric"
-                name="payloadMetric"
-                type="text"
-                value={formData.payloadMetric}
-                onChange={handleInputChange}
-                className={styles.formGroupInput}
-                placeholder="Enter payload metric"
-              />
-            </div>
-
-            <div className={styles.formGroup}>
-              <label className={styles.formGroupLabel} htmlFor="rateLimitPolicy">
-                Rate Limit Policy
-              </label>
-              <input
-                id="rateLimitPolicy"
-                name="rateLimitPolicy"
-                type="text"
-                value={formData.rateLimitPolicy || ''}
-                onChange={handleInputChange}
-                className={styles.formGroupInput}
-                placeholder="FIXED_WINDOW, SLIDING_WINDOW, TOKEN_BUCKET"
-              />
-            </div>
-
-            <div className={styles.formGroup}>
-              <label className={styles.formGroupLabel} htmlFor="granularity">
-                Granularity
-              </label>
-              <input
-                id="granularity"
-                name="granularity"
-                type="text"
-                value={formData.granularity || ''}
-                onChange={handleInputChange}
-                className={styles.formGroupInput}
-                placeholder="SECOND, MINUTE, HOUR, DAY, MONTH"
-              />
-            </div>
-
-            <div className={styles.formGroup}>
-              <label className={styles.formGroupLabel} htmlFor="grouping">
-                Grouping
-              </label>
-              <input
-                id="grouping"
-                name="grouping"
-                type="text"
-                value={formData.grouping}
-                onChange={handleInputChange}
-                className={styles.formGroupInput}
-                placeholder="Enter grouping"
-              />
-            </div>
-
-            <div className={styles.formGroup}>
-              <label className={styles.formGroupLabel} htmlFor="latencyClass">
-                Latency Class
-              </label>
-              <select
-                id="latencyClass"
-                name="latencyClass"
-                value={formData.latencyClass || ''}
-                onChange={handleSelectChange}
-                className={styles.formGroupSelect}
-              >
-                <option value="">Select</option>
-                <option value="LOW">LOW (&lt;100ms)</option>
-                <option value="MEDIUM">MEDIUM (100–500ms)</option>
-                <option value="HIGH">HIGH (&gt;500ms)</option>
-              </select>
-            </div>
-
-            <div className={styles.formGroup}>
-              <div className={styles.checkbox}>
-                <input
-                  type="checkbox"
-                  id="caching"
-                  name="caching"
-                  checked={!!formData.caching}
-                  onChange={handleInputChange}
-                />
-                <label className={styles.checkboxLabel} htmlFor="caching">
-                  Enable Caching
-                </label>
-              </div>
-            </div>
+            <ApiConfig formData={formData} setFormData={onChange} errors={errors} />
           </div>
+        );
+
+      case 'FlatFile':
+        return (
+          <FlatFileConfig formData={formData} setFormData={onChange} errors={errors} />
         );
 
       case 'LLMToken':
         return (
-          <LlmTokenConfig
-            formData={formData}
-            setFormData={(data) => onChange({ ...data })}
-          />
+          <LlmTokenConfig formData={formData} setFormData={onChange} errors={errors} />
         );
 
-     case 'FlatFile':
-      return (
-        <FlatFileConfig
-          formData={formData}
-          setFormData={(data) => onChange({ ...data })}
-        />
-      );
-        
-        
-       case 'SQLResult':
-      return (
-        <SqlResultConfig
-          formData={formData}
-          setFormData={(data) => onChange({ ...data })}
-        />
-      );
+      case 'SQLResult':
+        return (
+          <SqlResultConfig formData={formData} setFormData={onChange} errors={errors} />
+        );
 
       default:
-        return <p>No configuration fields for selected product type.</p>;
+        return <p>Please select one product type.</p>;
     }
   };
 
   return (
-    <form
-      onSubmit={(e) => {
+    <div className={styles.formContainer}>
+      <h2 className={styles.sectionHeading}>PLAN DETAILS</h2>
+      <form onSubmit={(e) => {
         e.preventDefault();
-        onNext();
-      }}
-    >
-      {renderFields()}
-
-        {/* <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
-          <button type="button" onClick={onBack}>
+        if (validateFields()) onNext();
+      }}>
+        {renderFields()}
+        <div className={styles.buttonGroup}>
+          <button type="button" onClick={onBack} className={styles.backButton}>
             Back
           </button>
-          <button type="submit">
-            Next
+          <button type="submit" className={styles.nextButton}>
+            Save & Next
           </button>
-        </div> */}
-          <div className={styles.buttonGroup}>
-             <button
-               onClick={onBack}
-               className={styles.backButton}
-             >
-               Back
-             </button>
-             <button
-               type="submit"
-               className={styles.nextButton}
-             >
-               Next
-             </button>
-          </div>
-        </form>
+        </div>
+      </form>
+    </div>
   );
 };
 

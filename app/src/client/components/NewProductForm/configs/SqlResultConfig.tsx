@@ -5,19 +5,20 @@ import styles from './SqlResultConfig.module.css';
 interface Props {
   formData: ProductFormData;
   setFormData: (data: Partial<ProductFormData>) => void;
+  errors: { [key: string]: string };
 }
 
-const SqlResultConfig: React.FC<Props> = ({ formData, setFormData }) => {
+const SqlResultConfig: React.FC<Props> = ({ formData, setFormData, errors }) => {
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value, type, checked } = e.target as HTMLInputElement;
-    setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
+    setFormData({ [name]: type === 'checkbox' ? checked : value });
   };
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData({ [name]: value });
   };
 
   return (
@@ -33,6 +34,7 @@ const SqlResultConfig: React.FC<Props> = ({ formData, setFormData }) => {
           className={styles.formGroupInput}
           placeholder="Enter query template"
         ></textarea>
+        {errors.queryTemplate && <div className={styles.errorMessage}>{errors.queryTemplate}</div>}
       </div>
 
       <div className={styles.formGroup}>
@@ -43,7 +45,6 @@ const SqlResultConfig: React.FC<Props> = ({ formData, setFormData }) => {
           value={formData.dbType || ''}
           onChange={handleSelectChange}
           className={styles.formGroupSelect}
-          defaultValue=""
         >
           <option value="">--Select--</option>
           <option value="MYSQL">MYSQL</option>
@@ -51,6 +52,7 @@ const SqlResultConfig: React.FC<Props> = ({ formData, setFormData }) => {
           <option value="SQLSERVER">SQLSERVER</option>
           <option value="ORACLE">ORACLE</option>
         </select>
+        {errors.dbType && <div className={styles.errorMessage}>{errors.dbType}</div>}
       </div>
 
       <div className={styles.formGroup}>
@@ -61,13 +63,13 @@ const SqlResultConfig: React.FC<Props> = ({ formData, setFormData }) => {
           value={formData.freshness || ''}
           onChange={handleSelectChange}
           className={styles.formGroupSelect}
-          defaultValue=""
         >
           <option value="">--Select--</option>
           <option value="REALTIME">REALTIME</option>
           <option value="HOURLY">HOURLY</option>
           <option value="DAILY">DAILY</option>
         </select>
+        {errors.freshness && <div className={styles.errorMessage}>{errors.freshness}</div>}
       </div>
 
       <div className={styles.formGroup}>
@@ -78,13 +80,13 @@ const SqlResultConfig: React.FC<Props> = ({ formData, setFormData }) => {
           value={formData.executionFrequency || ''}
           onChange={handleSelectChange}
           className={styles.formGroupSelect}
-          defaultValue=""
         >
           <option value="">--Select--</option>
           <option value="ON_DEMAND">ON_DEMAND</option>
           <option value="SCHEDULED">SCHEDULED</option>
           <option value="EVENT_DRIVEN">EVENT_DRIVEN</option>
         </select>
+        {errors.executionFrequency && <div className={styles.errorMessage}>{errors.executionFrequency}</div>}
       </div>
 
       <div className={styles.formGroup}>
@@ -98,6 +100,7 @@ const SqlResultConfig: React.FC<Props> = ({ formData, setFormData }) => {
           className={styles.formGroupInput}
           placeholder="Enter expected row range"
         />
+        {errors.expectedRowRange && <div className={styles.errorMessage}>{errors.expectedRowRange}</div>}
       </div>
 
       <div className={styles.formGroup}>
@@ -108,13 +111,13 @@ const SqlResultConfig: React.FC<Props> = ({ formData, setFormData }) => {
           value={formData.joinComplexity || ''}
           onChange={handleSelectChange}
           className={styles.formGroupSelect}
-          defaultValue=""
         >
           <option value="">--Select--</option>
           <option value="LOW">LOW</option>
           <option value="MEDIUM">MEDIUM</option>
           <option value="HIGH">HIGH</option>
         </select>
+        {errors.joinComplexity && <div className={styles.errorMessage}>{errors.joinComplexity}</div>}
       </div>
 
       <div className={styles.formGroup}>
@@ -128,18 +131,21 @@ const SqlResultConfig: React.FC<Props> = ({ formData, setFormData }) => {
           className={styles.formGroupInput}
           placeholder="Enter result size"
         />
+        {errors.resultSize && <div className={styles.errorMessage}>{errors.resultSize}</div>}
       </div>
 
       <div className={styles.formGroup}>
-        <label className={styles.formGroupLabel} htmlFor="cached">Cached Result</label>
-        <input
-          type="checkbox"
-          id="cached"
-          name="cached"
-          checked={!!formData.cached}
-          onChange={handleInputChange}
-        />
-      </div>
+  <label className={styles.formGroupLabel} htmlFor="cached">Cached Result</label>
+  <input
+    type="checkbox"
+    id="cached"
+    name="cached"
+    checked={!!formData.cached}
+    onChange={handleInputChange}
+    className={styles.customCheckbox} // 👈 custom class here
+  />
+</div>
+
     </div>
   );
 };

@@ -5,27 +5,22 @@ import styles from './LlmTokenConfig.module.css';
 interface Props {
   formData: ProductFormData;
   setFormData: (data: Partial<ProductFormData>) => void;
+  errors: { [key: string]: string };
 }
 
-const LlmTokenConfig: React.FC<Props> = ({ formData, setFormData }) => {
+const LlmTokenConfig: React.FC<Props> = ({ formData, setFormData, errors }) => {
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    setFormData({ [name]: value });
   };
 
   const handleSelectChange = (
     e: React.ChangeEvent<HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    setFormData({ [name]: value });
   };
 
   return (
@@ -45,6 +40,7 @@ const LlmTokenConfig: React.FC<Props> = ({ formData, setFormData }) => {
           <option value="MISTRAL">MISTRAL</option>
           <option value="CUSTOM">CUSTOM</option>
         </select>
+        {errors.tokenProvider && <div className={styles.errorMessage}>{errors.tokenProvider}</div>}
       </div>
 
       <div className={styles.formGroup}>
@@ -58,6 +54,7 @@ const LlmTokenConfig: React.FC<Props> = ({ formData, setFormData }) => {
           placeholder="Enter model name"
           className={styles.formGroupInput}
         />
+        {errors.modelName && <div className={styles.errorMessage}>{errors.modelName}</div>}
       </div>
 
       <div className={styles.formGroup}>
@@ -71,6 +68,7 @@ const LlmTokenConfig: React.FC<Props> = ({ formData, setFormData }) => {
           placeholder="Enter cost"
           className={styles.formGroupInput}
         />
+        {errors.tokenUnitCost && <div className={styles.errorMessage}>{errors.tokenUnitCost}</div>}
       </div>
 
       <div className={styles.formGroup}>
@@ -87,6 +85,7 @@ const LlmTokenConfig: React.FC<Props> = ({ formData, setFormData }) => {
           <option value="DYNAMIC">DYNAMIC</option>
           <option value="HYBRID">HYBRID</option>
         </select>
+        {errors.calculationMethod && <div className={styles.errorMessage}>{errors.calculationMethod}</div>}
       </div>
 
       <div className={styles.formGroup}>
@@ -100,6 +99,7 @@ const LlmTokenConfig: React.FC<Props> = ({ formData, setFormData }) => {
           placeholder="Enter quota"
           className={styles.formGroupInput}
         />
+        {errors.quota && <div className={styles.errorMessage}>{errors.quota}</div>}
       </div>
 
       <div className={styles.formGroup}>
@@ -113,6 +113,7 @@ const LlmTokenConfig: React.FC<Props> = ({ formData, setFormData }) => {
           placeholder="Enter prompt"
           className={styles.formGroupInput}
         />
+        {errors.promptTemplate && <div className={styles.errorMessage}>{errors.promptTemplate}</div>}
       </div>
 
       <div className={styles.formGroup}>
@@ -129,6 +130,7 @@ const LlmTokenConfig: React.FC<Props> = ({ formData, setFormData }) => {
           <option value="MEDIUM">MEDIUM</option>
           <option value="HIGH">HIGH</option>
         </select>
+        {errors.inferencePriority && <div className={styles.errorMessage}>{errors.inferencePriority}</div>}
       </div>
 
       <div className={styles.formGroup}>
@@ -145,6 +147,7 @@ const LlmTokenConfig: React.FC<Props> = ({ formData, setFormData }) => {
           <option value="PREMIUM">PREMIUM</option>
           <option value="GPU_OPTIMIZED">GPU_OPTIMIZED</option>
         </select>
+        {errors.computeTier && <div className={styles.errorMessage}>{errors.computeTier}</div>}
       </div>
     </div>
   );

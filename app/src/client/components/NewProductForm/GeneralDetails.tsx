@@ -1,25 +1,14 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Grid, Box } from '@mui/material';
 import styles from './GeneralDetails.module.css';
-
-import {
-  TextField,
-  Button,
-  Grid,
-  FormControlLabel,
-  Switch,
-  MenuItem,
-  Typography,
-  Box,
-  IconButton,
-} from '@mui/material';
+import { validateProductName } from '../../api/productValidation';
 
 interface FormLabel {
   productName: string;
   productType: string;
   category: string;
   tags: string;
-  description: string;
+  productDescription: string;
   version: string;
   status: string;
   internalSkuCode: string;
@@ -31,20 +20,19 @@ const formLabels: FormLabel = {
   productType: 'Product Type',
   category: 'Category',
   tags: 'Tags',
-  description: 'Description',
+  productDescription: 'Description',
   version: 'Version',
   status: 'Status',
   internalSkuCode: 'Internal SKU Code',
   visibility: 'Visibility'
 };
-import { Add, Close } from '@mui/icons-material';
 
 interface GeneralDetailsProps {
   formData: {
     productName: string;
     productType: string;
     version: string;
-    description: string;
+    productDescription: string;
     category: string;
     status: string;
     tags: { key: string; value: string }[];
@@ -52,8 +40,10 @@ interface GeneralDetailsProps {
   };
   onChange: (data: Partial<GeneralDetailsProps['formData']>) => void;
   onNext: () => void;
-  onBack: () => void;
+  onCancel: () => void;
+  onClose?: () => void;
   categoryOptions: string[];
+  productTypeOptions: string[];
   addTag: (key: string, value: string) => void;
   removeTag: (key: string) => void;
   tagKey: string;
@@ -62,30 +52,100 @@ interface GeneralDetailsProps {
   setTagValue: (value: string) => void;
 }
 
-const productTypeOptions = ['API', 'FlatFile', 'SQLResult', 'LLMToken'];
-const categoryOptions = ['INTERNAL', 'EXTERNAL', 'PARTNER'];
 const statusOptions = ['DRAFT', 'ACTIVE', 'INACTIVE', 'DEPRECATED'];
+
+interface ErrorState {
+  [key: string]: string | undefined;
+}
 
 const GeneralDetails: React.FC<GeneralDetailsProps> = ({
   formData,
   onChange,
   onNext,
-  onBack,
+  onCancel,
   categoryOptions,
+  productTypeOptions,
   addTag,
   removeTag,
   tagKey,
   tagValue,
   setTagKey,
-  setTagValue
+  setTagValue,
 }) => {
-  const navigate = useNavigate();
+  const [errors, setErrors] = useState<ErrorState>({});
+  const [isCheckingName, setIsCheckingName] = useState(false);
+  const [isUnique, setIsUnique] = useState(true);
 
-  const handleCancel = () => {
-    navigate('/get-started/products');
+  // Remove the checkProductNameUnique function since we're handling validation directly in useEffect
+
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (formData.productName?.trim()) {
+        try {
+          const { exists, message } = await validateProductName(formData.productName);
+          setIsUnique(!exists);
+          if (message) {
+            setErrors(prev => ({ ...prev, productName: message }));
+          } else {
+            setErrors(prev => ({ ...prev, productName: undefined }));
+          }
+        } catch (error) {
+          console.error('Error validating product name:', error);
+          setErrors(prev => ({ ...prev, productName: 'Error checking product name uniqueness' }));
+        }
+      } else {
+        setIsUnique(true);
+        setErrors(prev => ({ ...prev, productName: undefined }));
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [formData.productName]);
+
+  const validate = (): boolean => {
+    const newErrors: ErrorState = {};
+
+    if (!formData.productName?.trim()) {
+      newErrors.productName = 'Product Name is required.';
+    } else if (isCheckingName) {
+      newErrors.productName = 'Checking product name, please wait...';
+    } else if (!isUnique) {
+      newErrors.productName = 'Product Name must be unique.';
+    }
+
+    if (!formData.productType?.trim()) newErrors.productType = 'Product Type is required.';
+    if (!formData.version?.trim()) newErrors.version = 'Version is required.';
+    if (!formData.productDescription?.trim()) newErrors.productDescription = 'Product Description is required.';
+    if (!formData.category?.trim()) newErrors.category = 'Category is required.';
+    if (!formData.status?.trim()) newErrors.status = 'Status is required.';
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange({ productName: e.target.value });
+
+  const handleNext = () => {
+    if (isCheckingName) {
+      setErrors(prev => ({ ...prev, productName: 'Still checking uniqueness, please wait...' }));
+      return;
+    }
+
+    const isValid = validate();
+    if (isValid) {
+      onNext();
+    }
+  };
+
+  const setError = (key: string, message: string) => {
+    setErrors(prev => ({ ...prev, [key]: message }));
+  };
+
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    if (!value) {
+      setError(name, `${formLabels[name as keyof typeof formLabels]} is required`);
+    } else {
+      onChange({ [name]: value });
+      setError(name, '');
+    }
   };
 
   const handleAddTag = () => {
@@ -97,156 +157,159 @@ const GeneralDetails: React.FC<GeneralDetailsProps> = ({
   };
 
   return (
-      <Box p={3} borderRadius={2} bgcolor="#fff" className={styles.formContainer}>
-        <Grid container spacing={2} className={styles.formGrid}>
-          <Grid item xs={12} sm={6}>
-            <label className={styles.label}>{formLabels.productName}</label>
+    <div className={styles.formContainer}>
+      <h2 className={styles.sectionHeading}>PLAN DETAILS</h2>
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <label className={styles.label}>{formLabels.productName}</label>
+          <div className={styles.inputWithLoader}>
             <input
               type="text"
-              className={styles.productNameInput}
-              placeholder="Enter product name"
+              name="productName"
               value={formData.productName}
               onChange={(e) => onChange({ productName: e.target.value })}
+              className={styles.formInput}
+              placeholder="Enter Product Name"
               required
             />
-          </Grid>
+            {isCheckingName && <span className={styles.loadingIndicator}>Checking...</span>}
+            {errors.productName && <div className={styles.error}>{errors.productName}</div>}
+          </div>
+        </Grid>
 
-          <Grid item xs={12} sm={6}>
-            <label className={styles.label}>{formLabels.productType}</label>
-            <select
-              className={styles.formSelect}
-              value={formData.productType}
-              onChange={(e) => onChange({ productType: e.target.value })}
-              required
-            >
-              <option value="">--Select--</option>
-              {productTypeOptions.map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
-          </Grid>
+        <Grid item xs={12}>
+          <label className={styles.label}>{formLabels.productType}</label>
+          <select
+            className={styles.formSelect}
+            name="productType"
+            value={formData.productType}
+            onChange={handleSelectChange}
+          >
+            <option value="">--Select--</option>
+            {productTypeOptions.map((type) => (
+              <option key={type} value={type}>{type}</option>
+            ))}
+          </select>
+          {errors.productType && <div className={styles.error}>{errors.productType}</div>}
+        </Grid>
 
-          <Grid item xs={12} sm={6}>
-            <label className={styles.label}>{formLabels.version}</label>
+        <Grid item xs={12}>
+          <label className={styles.label}>{formLabels.version}</label>
+          <input
+            type="text"
+            name="version"
+            value={formData.version}
+            onChange={(e) => onChange({ version: e.target.value })}
+            className={styles.formInput}
+            placeholder="Enter Version"
+          />
+          {errors.version && <div className={styles.error}>{errors.version}</div>}
+        </Grid>
+
+        <Grid item xs={12}>
+          <label className={styles.label}>{formLabels.productDescription}</label>
+          <textarea
+            name="productDescription"
+            value={formData.productDescription}
+            onChange={(e) => onChange({ productDescription: e.target.value })}
+            className={styles.formTextarea}
+            placeholder="Enter Product Description"
+            rows={3}
+          />
+          {errors.productDescription && <div className={styles.error}>{errors.productDescription}</div>}
+        </Grid>
+
+        <Grid item xs={12}>
+          <label className={styles.label}>{formLabels.category}</label>
+          <select
+            className={styles.formSelect}
+            name="category"
+            value={formData.category}
+            onChange={handleSelectChange}
+          >
+            <option value="">--Select--</option>
+            {categoryOptions.map((category) => (
+              <option key={category} value={category}>{category}</option>
+            ))}
+          </select>
+          {errors.category && <div className={styles.error}>{errors.category}</div>}
+        </Grid>
+
+        <Grid item xs={12}>
+          <label className={styles.label}>{formLabels.status}</label>
+          <select
+            className={styles.formSelect}
+            name="status"
+            value={formData.status}
+            onChange={handleSelectChange}
+          >
+            <option value="">--Select--</option>
+            {statusOptions.map((status) => (
+              <option key={status} value={status}>{status}</option>
+            ))}
+          </select>
+          {errors.status && <div className={styles.error}>{errors.status}</div>}
+        </Grid>
+
+        <Grid item xs={12}>
+          <label className={styles.label}>{formLabels.tags}</label>
+          <div className={styles.tagInputWrapper}>
             <input
               type="text"
-              className={styles.formInput}
-              placeholder="Enter version"
-              value={formData.version}
-              onChange={(e) => onChange({ version: e.target.value })}
-              required
+              placeholder="Key"
+              value={tagKey}
+              onChange={(e) => setTagKey(e.target.value)}
+              className={styles.tagKeyInput}
             />
-          </Grid>
-
-          <Grid item xs={12}>
-            <label className={styles.label}>{formLabels.description}</label>
-            <textarea
-              className={styles.formTextarea}
-              placeholder="Enter description"
-              value={formData.description}
-              onChange={(e) => onChange({ description: e.target.value })}
-              required
-              rows={3}
+            <input
+              type="text"
+              placeholder="Value"
+              value={tagValue}
+              onChange={(e) => setTagValue(e.target.value)}
+              className={styles.tagValueInput}
             />
-          </Grid>
+            <button onClick={handleAddTag} disabled={!tagKey || !tagValue}>✚</button>
+          </div>
+          <div className={styles.tagsContainer}>
+            {formData.tags.map((tag, index) => (
+              <div key={index} className={styles.tagItem}>
+                <span className={styles.tagKey}>{tag.key}</span>
+                <span className={styles.tagValue}>{tag.value}</span>
+                <button onClick={() => removeTag(tag.key)} className={styles.tagRemoveButton}>✕</button>
+              </div>
+            ))}
+          </div>
+        </Grid>
 
-          <Grid item xs={12} sm={6}>
-            <label className={styles.label}>{formLabels.category}</label>
-            <select
-              className={styles.formSelect}
-              value={formData.category}
-              onChange={(e) => onChange({ category: e.target.value })}
-              required
-            >
-              <option value="">--Select--</option>
-              {categoryOptions.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <label className={styles.label}>{formLabels.status}</label>
-            <select
-              className={styles.formSelect}
-              value={formData.status}
-              onChange={(e) => onChange({ status: e.target.value })}
-              required
-            >
-              <option value="">--Select--</option>
-              {statusOptions.map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
-            </select>
-          </Grid>
-
-          <Grid item xs={12}>
-            <label className={styles.label}>Tags</label>
-            <div className={styles.tagInputWrapper}>
-              <input
-                type="text"
-                id="tagKey"
-                placeholder="Key"
-                value={tagKey}
-                onChange={(e) => setTagKey(e.target.value)}
-                className={styles.tagKeyInput}
-              />
-              <input
-                type="text"
-                id="tagValue"
-                placeholder="Value"
-                value={tagValue}
-                onChange={(e) => setTagValue(e.target.value)}
-                className={styles.tagValueInput}
-              />
-              <button
-                onClick={handleAddTag}
-                disabled={!tagKey || !tagValue}
-              >
-                ✚ 
-              </button>
-            </div>
-            <div className={styles.tagsContainer}>
-              {formData.tags.map((tag, index) => (
-                <div key={index} className={styles.tagItem}>
-                  <span className={styles.tagKey}>{tag.key}</span>
-                  <span className={styles.tagValue}>{tag.value}</span>
-                  <button
-                    onClick={() => removeTag(tag.key)}
-                    className={styles.tagRemoveButton}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                      <path d="M2 3.99992H14M12.6667 3.99992V13.3333C12.6667 13.9999 12 14.6666 11.3333 14.6666H4.66667C4 14.6666 3.33333 13.9999 3.33333 13.3333V3.99992M5.33333 3.99992V2.66659C5.33333 1.99992 6 1.33325 6.66667 1.33325H9.33333C10 1.33325 10.6667 1.99992 10.6667 2.66659V3.99992M6.66667 7.33325V11.3333M9.33333 7.33325V11.3333" stroke="#E34935" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </button>
-                </div>
-              ))}
-            </div>
-          </Grid>
-          <Grid item xs={12}>
-            <label className={styles.label}>{formLabels.visibility}</label>
+        <Grid item xs={12}>
+          <label className={styles.label}>{formLabels.visibility}</label>
+          <div className={styles.checkboxContainer}>
             <input
               type="checkbox"
+              name="visibility"
               checked={formData.visibility}
               onChange={(e) => onChange({ visibility: e.target.checked })}
               className={styles.visibilityCheckbox}
             />
-          </Grid>
-          <Grid item xs={12}>
-            <Box className={styles.buttonGroup}>
-              <button type="button" onClick={handleCancel} className={styles.buttonSecondary}>Cancel</button>
-              <button type="button" onClick={() => onNext()} className={styles.buttonPrimary}>Next</button>
-            </Box>
-          </Grid>
+          </div>
         </Grid>
-      </Box>
-    );
-  };
+
+        <Grid item xs={12}>
+          <Box className={styles.buttonGroup}>
+            <button type="button" onClick={onCancel} className={styles.buttonSecondary}>Cancel</button>
+            <button
+              type="button"
+              onClick={handleNext}
+              className={styles.buttonPrimary}
+              disabled={isCheckingName}
+            >
+              Save & Next
+            </button>
+          </Box>
+        </Grid>
+      </Grid>
+    </div>
+  );
+};
 
 export default GeneralDetails;

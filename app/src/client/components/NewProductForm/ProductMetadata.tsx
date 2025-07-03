@@ -3,7 +3,6 @@ import { Grid } from '@mui/material';
 import { ProductFormData, enums } from '../../../types/productTypes';
 import styles from './ProductMetadata.module.css';
 import metadataStyles from './MetadataLabels.module.css';
-import FlatFileStyles from './configs/FlatFileConfig.module.css';
 
 interface ProductMetadataProps {
   formData: ProductFormData;
@@ -23,6 +22,10 @@ interface ProductMetadataProps {
   removeLabel: (key: string) => void;
 }
 
+type ErrorState = {
+  [key: string]: string;
+};
+
 const ProductMetadata: React.FC<ProductMetadataProps> = ({
   formData,
   onChange,
@@ -40,50 +43,52 @@ const ProductMetadata: React.FC<ProductMetadataProps> = ({
   addLabel,
   removeLabel,
 }) => {
-  const [error, setError] = React.useState<string | null>(null);
+  const [errors, setErrors] = useState<ErrorState>({});
 
-  const validateEnum = (fieldName: string, value: string, enumValues: string[]) => {
-    if (!enumValues.includes(value)) {
-      setError(`Invalid value for ${fieldName}. Valid values are: ${enumValues.join(', ')}`);
-      return false;
+  const validateFields = (): boolean => {
+    const newErrors: ErrorState = {};
+
+    if (!formData.internalSkuCode?.trim()) newErrors.internalSkuCode = 'Internal SKU Code is required.';
+    if (!formData.uom?.trim()) newErrors.uom = 'UOM is required.';
+    if (!formData.effectiveStartDate) newErrors.effectiveStartDate = 'Effective Start Date is required.';
+    if (!formData.effectiveEndDate) newErrors.effectiveEndDate = 'Effective End Date is required.';
+    if (!formData.auditLogId?.trim()) newErrors.auditLogId = 'Audit Log ID is required.';
+    if (!formData.linkedRatePlans || formData.linkedRatePlans.length === 0) {
+      newErrors.linkedRatePlans = 'At least one rate plan is required.';
     }
-    return true;
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const target = e.target as HTMLInputElement | HTMLSelectElement;
-    const { name, value, type } = target;
-    
-    // Validate enums
-    if (name === 'format' && !validateEnum('format', value, enums.formats)) return;
-    if (name === 'accessMethod' && !validateEnum('accessMethod', value, enums.accessMethods)) return;
-    if (name === 'compression' && !validateEnum('compression', value, enums.compressionFormats)) return;
-    if (name === 'deliveryFrequency' && !validateEnum('deliveryFrequency', value, enums.deliveryFrequencies)) return;
+    const { name, value, type } = e.target;
+    const parsedValue = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
 
-    const data: Partial<ProductFormData> = {
-      [name]: type === 'checkbox' ? target.checked : value,
-    };
+    onChange({ [name]: parsedValue });
 
-    onChange(data);
-    setError(null);
+    // clear error on change if valid
+    if (parsedValue !== '' && errors[name]) {
+      setErrors((prev) => {
+        const updated = { ...prev };
+        delete updated[name];
+        return updated;
+      });
+    }
   };
 
- 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (validateFields()) {
+      onNext();
+    }
+  };
 
   return (
-    <form onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      onNext();
-    }}>
+    <form onSubmit={handleSubmit}>
+      <h2 className={styles.sectionHeading}>PLAN DETAILS</h2>
       <div className={styles.container}>
         <Grid container spacing={2} className={styles.formGrid}>
-          <Grid item xs={12}>
-            {error && (
-              <div className={styles.error}>
-                {error}
-              </div>
-            )}
-          </Grid>
           <Grid item xs={12} sm={6}>
             <div className={styles.formGroupLabel}>
               <label>Internal SKU Code</label>
@@ -95,9 +100,9 @@ const ProductMetadata: React.FC<ProductMetadataProps> = ({
                 className={styles.inputField}
                 placeholder="Enter internal SKU code"
               />
+              {errors.internalSkuCode && <div className={styles.error}>{errors.internalSkuCode}</div>}
             </div>
           </Grid>
-
 
           <Grid item xs={12} sm={6}>
             <div className={styles.formGroupLabel}>
@@ -110,6 +115,7 @@ const ProductMetadata: React.FC<ProductMetadataProps> = ({
                 className={styles.inputField}
                 placeholder="Enter UOM"
               />
+              {errors.uom && <div className={styles.error}>{errors.uom}</div>}
             </div>
           </Grid>
 
@@ -123,6 +129,7 @@ const ProductMetadata: React.FC<ProductMetadataProps> = ({
                 onChange={handleChange}
                 className={styles.inputField}
               />
+              {errors.effectiveStartDate && <div className={styles.error}>{errors.effectiveStartDate}</div>}
             </div>
           </Grid>
 
@@ -136,6 +143,7 @@ const ProductMetadata: React.FC<ProductMetadataProps> = ({
                 onChange={handleChange}
                 className={styles.inputField}
               />
+              {errors.effectiveEndDate && <div className={styles.error}>{errors.effectiveEndDate}</div>}
             </div>
           </Grid>
 
@@ -145,30 +153,29 @@ const ProductMetadata: React.FC<ProductMetadataProps> = ({
               <div className={styles.checkboxGroup}>
                 <input
                   type="checkbox"
-                  checked={formData.billable}
-                  onChange={(e) => onChange({ billable: e.target.checked })}
                   name="billable"
+                  checked={formData.billable}
+                  onChange={handleChange}
                   className={styles.checkbox}
                 />
               </div>
             </div>
           </Grid>
+
           <Grid item xs={12}>
             <label className={styles.formGroupLabel}>Labels</label>
             <div className={metadataStyles.labelInputWrapper}>
               <input
                 type="text"
-                id="labelKey"
                 placeholder="Key"
-                value={labelKey || ''}
+                value={labelKey}
                 onChange={(e) => setLabelKey(e.target.value)}
                 className={metadataStyles.labelKeyInput}
               />
               <input
                 type="text"
-                id="labelValue"
                 placeholder="Value"
-                value={labelValue || ''}
+                value={labelValue}
                 onChange={(e) => setLabelValue(e.target.value)}
                 className={metadataStyles.labelValueInput}
               />
@@ -186,43 +193,51 @@ const ProductMetadata: React.FC<ProductMetadataProps> = ({
                 disabled={!labelKey || !labelValue}
                 className={styles.labelAddButton}
               >
-                ✚ 
+                ✚
               </button>
             </div>
-            <div className={styles.labelList}>
-              {Object.entries(formData.labels || {}).map(([key, value], index) => (
-                <div key={index} className={styles.labelItem}>
-                  <span className={metadataStyles.labelKey}>{key}</span>
-                  <span className={metadataStyles.labelValue}>{value}</span>
+            <div className={metadataStyles.labelList}>
+              {Object.entries(formData.labels || {}).map(([key, value]) => (
+                <div key={key} className={styles.labelRow}>
+                  <span className={styles.labelKey}>{key}</span>
+                  <span className={styles.labelValue}>{value}</span>
                   <button
                     onClick={() => removeLabel(key)}
-                    className={styles.labelRemoveButton}
+                    className={styles.labelDeleteBtn}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                      <path d="M2 3.99992H14M12.6667 3.99992V13.3333C12.6667 13.9999 12 14.6666 11.3333 14.6666H4.66667C4 14.6666 3.33333 13.9999 3.33333 13.3333V3.99992M5.33333 3.99992V2.66659C5.33333 1.99992 6 1.33325 6.66667 1.33325H9.33333C10 1.33325 10.6667 1.99992 10.6667 2.66659V3.99992M6.66667 7.33325V11.3333M9.33333 7.33325V11.3333" stroke="#E34935" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+  <path d="M2 4.00016H14M12.6667 4.00016V13.3335C12.6667 14.0002 12 14.6668 11.3333 14.6668H4.66667C4 14.6668 3.33333 14.0002 3.33333 13.3335V4.00016M5.33333 4.00016V2.66683C5.33333 2.00016 6 1.3335 6.66667 1.3335H9.33333C10 1.3335 10.6667 2.00016 10.6667 2.66683V4.00016M6.66667 7.3335V11.3335M9.33333 7.3335V11.3335" stroke="#E34935" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
                   </button>
                 </div>
               ))}
             </div>
           </Grid>
-          
 
           <Grid item xs={12} sm={6}>
             <div className={styles.formGroupLabel}>
               <label>Linked Rate Plans</label>
               <input
                 type="text"
-                name="linkedRatePlanIds"
+                name="linkedRatePlans"
                 value={Array.isArray(formData.linkedRatePlans) ? formData.linkedRatePlans.join(', ') : ''}
                 onChange={(e) => {
                   const value = e.target.value.trim();
-                  const ids = value ? [value] : [];
+                  const ids = value ? value.split(',').map((v) => v.trim()) : [];
                   onChange({ linkedRatePlans: ids });
+
+                  if (ids.length > 0 && errors.linkedRatePlans) {
+                    setErrors((prev) => {
+                      const updated = { ...prev };
+                      delete updated.linkedRatePlans;
+                      return updated;
+                    });
+                  }
                 }}
-                placeholder="Enter rate plan name (e.g., sample, app)"
+                placeholder="Enter rate plan names"
                 className={styles.inputField}
               />
+              {errors.linkedRatePlans && <div className={styles.error}>{errors.linkedRatePlans}</div>}
             </div>
           </Grid>
 
@@ -237,23 +252,23 @@ const ProductMetadata: React.FC<ProductMetadataProps> = ({
                 placeholder="Enter audit log ID"
                 className={styles.inputField}
               />
+              {errors.auditLogId && <div className={styles.error}>{errors.auditLogId}</div>}
             </div>
           </Grid>
-          
 
           <Grid item xs={12} className={styles.buttonGroup}>
             <button
+              type="button"
               onClick={onBack}
               className={styles.backButton}
             >
               Back
             </button>
             <button
-              type="button"
-              onClick={onNext}
+              type="submit"
               className={styles.buttonPrimary}
             >
-              Next
+              Save & Next
             </button>
           </Grid>
         </Grid>

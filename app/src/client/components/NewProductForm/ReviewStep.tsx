@@ -41,6 +41,7 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ formData, onBack, onSubmit }) =
 
   return (
     <div className={styles.reviewContainer}>
+      <h2 className={styles.sectionHeading}>REVIEW</h2>
       <div className={styles.sectionWrapper}>
         {/* Section 1: General Details */}
         <div className={styles.sectionBlock}>
@@ -49,7 +50,7 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ formData, onBack, onSubmit }) =
             {renderItem('Product Name', formData.productName)}
             {renderItem('Product Type', formData.productType)}
             {renderItem('Version', formData.version)}
-            {renderItem('Description', formData.description)}
+            {renderItem('Description', formData.productDescription)}
             {renderItem('Category', formData.category)}
             {renderItem('Tags',formData.tags)}
             {renderItem('Visibility', formData.visibility ? 'Yes' : 'No')}
@@ -59,7 +60,7 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ formData, onBack, onSubmit }) =
 
         {/* Section 2: Metadata */}
         <div className={styles.sectionBlock}>
-          <h3 className={styles.sectionTitle}>Metadata</h3>
+          <h3 className={styles.sectionTitle}>Product Metadata</h3>
           <div className={styles.section}>
             {renderItem('Internal SKU Code', formData.internalSkuCode)}
             {renderItem('Unit of Measure', formData.uom)}
@@ -129,7 +130,7 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ formData, onBack, onSubmit }) =
       {/* Action Buttons */}
       <div className={styles.buttonRow}>
         <button className={styles.backButton} onClick={onBack}>Back</button>
-        <button className={styles.nextButton} onClick={onSubmit}>Submit</button>
+        <button className={styles.nextButton} onClick={onSubmit}>Create Product</button>
       </div>
     </div>
   );

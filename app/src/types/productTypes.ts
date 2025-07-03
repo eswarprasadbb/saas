@@ -2,7 +2,7 @@ export interface ProductFormData {
   productName: string;
   productType: string;
   version: string;
-  description: string;
+  productDescription: string;
   category: string;
   visibility: boolean;
   status: string;

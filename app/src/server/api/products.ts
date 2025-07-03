@@ -20,4 +20,19 @@ router.delete('/:productId', async (req, res) => {
   }
 });
 
-export default router;
+  // Check if product name is unique
+  router.get('/check-name/:productName', async (req, res) => {
+    try {
+      const { productName } = req.params;
+      const existingProduct = await prisma.product.findFirst({
+        where: { productName: productName }
+      });
+      
+      res.json({ exists: !!existingProduct });
+    } catch (error) {
+      console.error('Error checking product name:', error);
+      res.status(500).json({ error: 'Failed to check product name' });
+    }
+  });
+
+  export default router;

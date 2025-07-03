@@ -1,132 +1,123 @@
 .tiered-pricing-container {
-    padding: 20px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border: 1px solid var(--color-neutral-300);
-    width:380px;
-    margin-left: 250px;
-  }
-  
-  .tiered-pricing-columns {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    margin-top: 20px;
-  }
-  
-  .tier-row {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-  }
-  
-  .tier-cell {
-    flex: 1;
-  }
-  
-  .tier-cell h6 {
-    margin-bottom: 10px;
-    color: #333;
-    font-size: 14px;
-  }
-  
-  .tier-input-group {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .tier-input {
-    flex: 1;
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 14px;
-    box-sizing: border-box;
-    width:100px;
-    margin-top: -40px;
-    background-color: var(--color-neutral-100);
-  }
-  
-  .tiers-input {
-    flex: 1;
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 14px;
-    box-sizing: border-box;
-    width:100px;
-    margin-top: -40px;
-    background-color: var(--color-neutral-100);
-    margin-left: -20px;
-  }
-  .tier-inputs {
-    flex: 1;
-    padding: 8px 12px;
-    border: 1px solid var(--color-neutral-300);
-    border-radius: 8px;
-    font-size: 14px;
-    box-sizing: border-box;
-    width:80px;
-    margin-top: -40px;
-      background-color: var(--color-neutral-100);
-      margin-left: 10px;
-  
-  }
-  
-  
-  .tier-delete-btn {
-    background: #E34935;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 4px 8px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: opacity 0.2s;
-  }
-  
-  .tier-delete-btn:hover {
-    opacity: 0.8;
-  }
-  
-  .checkbox-row {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    margin-top: 20px;
-  }
-  
-  .checkbox-row input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-  }
-  
-  .add-tier-btn {
-    background: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 8px 16px;
-    cursor: pointer;
-    font-size: 14px;
-    margin-top: 20px;
-    transition: opacity 0.2s;
-  }
-  
-  .add-tier-btn:hover {
-    opacity: 0.9;
-  }
-  
-  @media (max-width: 768px) {
-    .tier-row {
-      flex-direction: column;
-      gap: 15px;
-    }
-    
-    .tier-cell {
-      width: 100%;
-    }
-  }
-  
+  width: 504px;
+  height: auto;
+  padding: 20px;
+  border-radius: var(--border-radius-sm);
+  margin-left: 200px;
+  border: 1px solid var(--color-neutral-300);
+}
+
+
+.tiered-pricing-container h5{
+  color: var(--color-neutral-1700);
+
+    /* body/bold/lg */
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-lg);
+    font-style: normal;
+    font-weight: 600;
+    line-height: var(--line-height-body-lg, 24px);
+    margin-top: 10px;
+    /* 150% */
+}
+.tiered-pricing-container p {
+  color: var(--color-neutral-800);
+
+    /* body/regular/lg */
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-lg, 16px);
+    font-style: normal;
+    font-weight: 400;
+    line-height: var(--line-height-body-lg, 24px);
+    margin-top: 10px;
+}
+
+.tiered-header {
+  display: flex;
+  gap: 95px;
+  color: var(--color-neutral-1400);
+
+  /* body/semibold/md */
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-md);
+  font-style: normal;
+  font-weight: 600;
+  line-height: var(--line-height-body-md);  margin-top: 10px;
+}
+
+.tiered-pricing-columns {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tier-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.tier-inputs {
+  display: flex;
+  gap: 12px;
+  flex-wrap: nowrap;
+  border-radius: var(--border-radius-sm);
+}
+
+.tier-input {
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: var(--border-radius-sm);
+  background-color: var(--color-neutral-100);
+}
+
+.from-input,
+.to-input {
+  width: 131px;
+}
+
+.price-input {
+  width:101px;
+  margin-left: 24px;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: red;
+}
+
+.tier-actions {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.add-tier-btn {
+  background: none;
+  color: var(--color-primary-600);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  /* body/regular/lg */
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-lg);
+  font-style: normal;
+  font-weight: 400;
+  line-height: var(--line-height-body-lg); /* 150% */
+}

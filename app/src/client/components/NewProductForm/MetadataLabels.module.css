@@ -12,7 +12,7 @@
   gap: 12px;
   margin-bottom: 12px;
   width: 420px;
-  margin-left: 250px;
+  /* margin-left: 250px; */
 }
 
 /* Label Inputs */
@@ -39,13 +39,6 @@
   box-shadow: none;
 }
 
-/* Label List */
-.labelList {
-  margin: 1rem 0;
-  padding: 1rem;
-  border-radius: var(--border-radius-sm);
-  border: 1px solid var(--color-neutral-300);
-}
 
 /* Label Item */
 .labelItem {
@@ -56,7 +49,7 @@
   /* background-color: #e8f0fe; */
   border-radius: 4px;
   margin-bottom: 0.5rem;
-  margin-left: 250px;
+  /* margin-left: 250px; */
 }
 
 .labelItem span {
@@ -130,6 +123,63 @@
   color: white;
 }
 
+
+.labelList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+  /* margin-left: 250px; */
+  padding: 16px;
+  width: 420px;
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--color-neutral-300);
+  background-color: var(--color-neutral-100);
+}
+
+.labelRow {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 8px 12px;
+  background: #fff;
+  gap: 16px;
+}
+
+.labelKey,
+.labelValue {
+  flex: 1;
+  padding-right: 16px;
+}
+
+.labelDeleteBtn {
+  background: none;
+  border: none;
+  color: #e53935;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0 8px;
+  margin-left: auto;
+}
+
+.labelKey {
+  flex: 1;
+  font-weight: 500;
+}
+
+.labelValue {
+  flex: 1;
+  font-weight: 500;
+}
+
+.labelDeleteBtn {
+  background: none;
+  border: none;
+  color: #e53935;
+  cursor: pointer;
+  font-size: 16px;
+}
 
 
 

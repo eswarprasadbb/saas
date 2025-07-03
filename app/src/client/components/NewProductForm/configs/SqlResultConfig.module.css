@@ -2,14 +2,14 @@
 .formGrid {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 1rem;
   width: 100%;
 }
 
 .formGroup {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 .formGroupLabel {
   color: var(--color-neutral-1200);
@@ -19,7 +19,7 @@
   line-height: var(--line-height-body-md);
   font-weight: 600;
   letter-spacing: -0.24px;
-  margin-left: 250px;
+  /* margin-left: 250px; */
 }
 
 /* Form Input Styles */
@@ -39,7 +39,7 @@
   font-style: normal;
   font-weight: 400;
   line-height: var(--line-height-body-md);
-  margin-left: 250px;
+  /* margin-left: 250px; */
 }
 
 /* Form Input Focus States */
@@ -59,7 +59,7 @@
 
 /* Checkbox Styles */
 .checkbox {
-  margin-left: 250px;
+  /* margin-left: 250px; */
   margin-top: 8px;
 }
 
@@ -73,3 +73,14 @@
   line-height: var(--line-height-body-md);
   margin-left: 8px;
 }
+
+
+.errorMessage {
+  color: var(--color-error-400);
+  font-size: 0.875rem;
+  margin-top: 4px;
+  /* margin-left: 250px; */
+  font-family: var(--font-family-primary);
+  font-weight: 400;
+}
+

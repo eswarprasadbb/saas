@@ -3,13 +3,14 @@
 .breadcrumb {
   display: flex;
   padding: 1rem;
-  background-color: var(--color-neutral-100);
+  background-color: var(--color-neutral-white);
   margin-bottom: 2rem;
   width: 1188px;
   height: 42px;
   padding: 12px 16px;
   align-items: center;
   gap: 8px;
+  border:1px solid var(--color-neutral-200);
 }
 
 .breadcrumbItem {

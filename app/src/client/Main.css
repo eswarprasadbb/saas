@@ -40,7 +40,7 @@
   @apply opacity-100;
 }
 .tableCheckbox:checked ~ div {
-  @apply bg-primary border-primary;
+  @apply bg-[#2D7CA4] border-[#2D7CA4];
 }
 
 .apexcharts-legend-text {
@@ -169,7 +169,7 @@ span.flatpickr-weekday,
 
 .empty-background{
   min-height: 100vh;
-  background-color: rgba(234, 234, 233, 1); 
+  background-color: white; 
   margin: 0;
   box-sizing: border-box;
     overflow-x: hidden;

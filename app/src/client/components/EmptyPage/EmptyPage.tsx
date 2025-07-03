@@ -14,7 +14,11 @@ export default function EmptyPage({ activeTab = 'Get Started' }: EmptyPageProps)
 
   return (
     <div className="empty-page">
-      <SideNavbar activeTab={activeTab} onTabClick={handleTabClick} />
+      <SideNavbar 
+        activeTab={activeTab} 
+        onTabClick={handleTabClick} 
+        hidden={false} 
+      />
       <div className="empty-content">
         {/* Add some content to test the background */}
       </div>

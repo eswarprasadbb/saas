@@ -1,5 +1,7 @@
 import React from 'react';
+import StairStepPricing from './StairStepPricing';
 import TieredPricingDetails from './TieredPricingDetails';
+import VolumeBasedPricingDetails from './VolumeBasedPricingDetails';
 import './PricingModelSetup.css';
 
 interface FlatFee {
@@ -15,15 +17,19 @@ interface TieredTier {
 }
 
 interface VolumeTier {
-  start: string;
-  end: string;
-  cost: string;
+  from: number;
+  to: number;
+  price: number;
 }
 
 interface StairStepTier {
-  start: string;
-  end: string;
-  cost: string;
+  from: number;
+  to: number;
+  price: number;
+}
+
+interface UsageBased {
+  perUnitAmount: string;
 }
 
 interface PricingFormData {
@@ -31,6 +37,7 @@ interface PricingFormData {
   tiered: { tiers: TieredTier[] };
   volume: { tiers: VolumeTier[] };
   stairstep: { tiers: StairStepTier[] };
+  usage: UsageBased;
 }
 
 interface Props {
@@ -45,6 +52,9 @@ interface Props {
   ) => void;
   handleAddTier: (type: 'tiered' | 'volume' | 'stairstep') => void;
   handleRemoveTier: (type: 'tiered' | 'volume' | 'stairstep', index: number) => void;
+  handleUsageChange: (value: string) => void;
+  noUpperLimit: boolean;
+  setNoUpperLimit: (val: boolean) => void;
 }
 
 const PricingModelSetup: React.FC<Props> = ({
@@ -53,39 +63,43 @@ const PricingModelSetup: React.FC<Props> = ({
   handleFlatDetailsChange,
   handleTierChange,
   handleAddTier,
-  handleRemoveTier
+  handleRemoveTier,
+  handleUsageChange,
+  noUpperLimit,
+  setNoUpperLimit
 }) => {
-  if (selectedPricingModel === 'flat-rate') {
+  const model = selectedPricingModel?.toLowerCase();
+
+  if (model === 'flat_fee') {
     return (
-      <div className='cp-container'>
-        <div className="price-plan-form-group">
-          <h6>Flat Fee</h6>
-          <p>Charge a fixed monthly price for your product with a simple flat fee setup.</p>
-          <label style={{ marginLeft: '10px' }}>Flat fee amount</label>
-          <input
-            value={pricingFormData.flat.recurringFee}
-            onChange={(e) => {
-              let value = e.target.value.replace(/[^\d.]/g, '');
-              value = value ? `$${value}` : '';
-              handleFlatDetailsChange('recurringFee', value);
-            }}
-            className="flat-recurring-fee-select"
-            placeholder="$0.00"
-          />
-        </div>
-        <div className="price-plan-form-group">
-          <label style={{ marginLeft: '10px' }}>Usage Limit</label>
-          <input
-            value={pricingFormData.flat.billingFrequency}
-            onChange={(e) => handleFlatDetailsChange('billingFrequency', e.target.value)}
-            placeholder="Enter Usage Limit"
-          />
-        </div>
+      <div className="price-plan-form-group">
+        <h6>Flat Fee</h6>
+        <p>Charge a fixed monthly price for your product with a simple flat fee setup.</p>
+
+        <label>Flat fee amount</label>
+        <input
+          value={pricingFormData.flat.recurringFee}
+          onChange={(e) => {
+            let value = e.target.value.replace(/[^\d.]/g, '');
+            value = value ? `$${value}` : '';
+            handleFlatDetailsChange('recurringFee', value);
+          }}
+          className="flat-recurring-fee-select"
+          placeholder="$0.00"
+        />
+
+        <label>Usage Limit</label>
+        <input
+          value={pricingFormData.flat.billingFrequency}
+          onChange={(e) => handleFlatDetailsChange('billingFrequency', e.target.value)}
+          placeholder="Enter Usage Limit"
+          className="flat-billing-frequency-select"
+        />
       </div>
     );
   }
 
-  if (selectedPricingModel === 'tiered') {
+  if (model === 'tiered') {
     return (
       <TieredPricingDetails
         tiers={pricingFormData.tiered.tiers}
@@ -95,55 +109,63 @@ const PricingModelSetup: React.FC<Props> = ({
           const parsedValue = parseFloat(value);
           handleTierChange('tiered', index, field, parsedValue);
         }}
+        noUpperLimit={noUpperLimit}
+        setNoUpperLimit={setNoUpperLimit}
       />
     );
   }
 
-  const renderTierInputs = (type: 'volume' | 'stairstep', label: string) => (
-    <div>
-      <div className="price-plan-model-form-header">
-        <h5>{label}</h5>
-        <p>Customer pays one price for all units based on total usage.</p>
-      </div>
-      <div className="price-plan-model-form-body">
-        {pricingFormData[type].tiers.map((tier, index) => (
-          <div key={index} className="price-plan-tier-row">
-            <input
-              type="number"
-              value={tier.start}
-              onChange={(e) => handleTierChange(type, index, 'start', e.target.value)}
-              placeholder="Start"
-            />
-            <input
-              type="number"
-              value={tier.end}
-              onChange={(e) => handleTierChange(type, index, 'end', e.target.value)}
-              placeholder="End"
-            />
-            <input
-              type="number"
-              value={tier.cost}
-              onChange={(e) => handleTierChange(type, index, 'cost', e.target.value)}
-              placeholder="Cost"
-            />
-            <button onClick={() => handleRemoveTier(type, index)} className="price-plan-delete-btn">
-              Delete
-            </button>
-          </div>
-        ))}
-        <button onClick={() => handleAddTier(type)} className="price-plan-add-tier-btn">
-          + Add Tier
-        </button>
-      </div>
-    </div>
-  );
-
-  if (selectedPricingModel === 'volume-based') {
-    return renderTierInputs('volume', 'Volume-Based Pricing');
+  if (model === 'volume_based') {
+    return (
+      <VolumeBasedPricingDetails
+        tiers={pricingFormData.volume.tiers}
+        onAddTier={() => handleAddTier('volume')}
+        onDeleteTier={(index) => handleRemoveTier('volume', index)}
+        onChange={(index, field, value) => {
+          const parsedValue = parseFloat(value);
+          handleTierChange('volume', index, field, parsedValue);
+        }}
+        noUpperLimit={noUpperLimit}
+        setNoUpperLimit={setNoUpperLimit}
+      />
+    );
   }
 
-  if (selectedPricingModel === 'stairstep') {
-    return renderTierInputs('stairstep', 'Stair-Step Pricing');
+  if (model === 'stairstep') {
+    return (
+      <StairStepPricing
+        steps={pricingFormData.stairstep.tiers}
+        onAddStep={() => handleAddTier('stairstep')}
+        onDeleteStep={(index) => handleRemoveTier('stairstep', index)}
+        onChange={(index, field, value) => {
+          const parsedValue = parseFloat(value);
+          handleTierChange('stairstep', index, field, parsedValue);
+        }}
+        noUpperLimit={noUpperLimit}
+        setNoUpperLimit={setNoUpperLimit}
+      />
+    );
+  }
+
+  if (model === 'usage_based') {
+    return (
+      <div className="price-plan-form-group">
+        <h6>Usage Based</h6>
+        <p>Bill your consumers based on actual usage with flexible usage-based pricing.</p>
+
+        <label>Per Unit Amount</label>
+        <input
+          value={pricingFormData.usage.perUnitAmount}
+          onChange={(e) => {
+            let value = e.target.value.replace(/[^\d.]/g, '');
+            value = value ? `$${value}` : '';
+            handleUsageChange(value);
+          }}
+          className="flat-recurring-fee-select"
+          placeholder="$0.00"
+        />
+      </div>
+    );
   }
 
   return <p>Please select a pricing model to continue.</p>;
